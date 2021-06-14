@@ -35,14 +35,14 @@ public class Jokes {
             //Getting a response:
             int response = connect.getResponseCode();
             //System.out.print(response);  //Returns 200 on success
-
+            
             read = new BufferedReader(new InputStreamReader(connect.getInputStream()));  //reads the json response?
             line = read.readLine();
             while(line != null){
                 responseBack.append(line);
                 line = read.readLine();
             }
-            read.close();
+            //read.close(); //moved to finally block
             //System.out.println(responseBack.toString());
 
             reading(responseBack.toString());
@@ -51,6 +51,8 @@ public class Jokes {
             Connection c = connectDB();
             makeTable(c);
             //insertToTable(c, responseBack.toString());
+
+            //drop table now?
         }
         catch(MalformedURLException ex){
             ex.printStackTrace();
@@ -59,6 +61,7 @@ public class Jokes {
             ex.printStackTrace();
         }
         finally {
+            read.close();
             connect.disconnect();
         }
     }
@@ -149,11 +152,11 @@ public class Jokes {
                     String setup = joke.getString("setup");
                     String delivery = joke.getString("delivery");
                     System.out.println(setup + "\n\t" + delivery);
-                    query = "INSERT INTO Jokes(id, setup, delivery) VALUES(" + i + ", \'" + setup + "\' , \'" + delivery + "\')";
+                    query = "INSERT INTO jokes(id, setup, delivery) VALUES(" + i + ", \'" + setup + "\' , \'" + delivery + "\')";
                 } else {
                     String delivery = joke.getString("joke");
                     System.out.println(delivery);
-                    query = "INSERT INTO Jokes(id, delivery) VALUES(" + i + ", \''" + delivery + "\')";
+                    query = "INSERT INTO jokes(id, delivery) VALUES(" + i + ", \''" + delivery + "\')";
                 }
                 System.out.print("\n");
                 System.out.println("Query: " + query);
