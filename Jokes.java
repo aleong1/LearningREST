@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class Jokes {
@@ -19,15 +20,22 @@ public class Jokes {
         BufferedReader read = null;
         String line;
         StringBuffer responseBack = new StringBuffer();
+        URL url = null;
 
         try {
             String base = "https://v2.jokeapi.dev/joke/Any?%s";
             base = String.format(base, "blacklistFlags=nsfw,religious,political,racist,sexist,explicit&%s");
-            base = String.format(base, "amount=10" );
+            base = String.format(base, "amount=10");
             //System.out.print("URL is: " + base);
             URL url = new URL(base);
             //URL url = new URL("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&amount=10");
-            connect = (HttpURLConnection) url.openConnection();
+        }
+        catch(MalformedURLException ex){
+            ex.printStackTrace();
+        }
+
+        try (connect = (HttpURLConnection) url.openConnection()){  //try with resources
+            //connect = (HttpURLConnection) url.openConnection();
 
             //Setting up for requests
             connect.setRequestMethod("GET");
@@ -45,16 +53,13 @@ public class Jokes {
             //read.close(); //moved to finally block
             //System.out.println(responseBack.toString());
 
-            reading(responseBack.toString());
+            //reading(responseBack.toString());  //this is basically in insertToTable
 
             //make connection to postgreSQL
             Connection c = connectDB();
             makeTable(c);
             insertToTable(c, responseBack.toString());
             //deleteTuplesFromTable(c);
-        }
-        catch(MalformedURLException ex){
-            ex.printStackTrace();
         }
         catch(IOException ex) {
             ex.printStackTrace();
@@ -116,6 +121,9 @@ public class Jokes {
         catch (Exception ex){
             System.out.print(ex);
         }
+        finally {
+            connection.close();
+        }
 
         return connection;
     }
@@ -136,6 +144,9 @@ public class Jokes {
         catch (Exception ex){
             ex.printStackTrace();
         }
+        finally {
+            stmt.close();
+        }
     }
 
 
@@ -143,8 +154,9 @@ public class Jokes {
     public static void insertToTable(Connection connection, String data){
         JSONObject jokes = new JSONObject(data);
         JSONArray listOfJokes = new JSONArray(jokes.getJSONArray("jokes"));
+        Statement stmt = null;
         try {
-            Statement stmt = connection.createStatement();  //try something called Prepared statement
+            stmt = connection.createStatement();  //try something called Prepared statement
 
             for (int i = 0; i < listOfJokes.length(); i++) {
                 JSONObject joke = listOfJokes.getJSONObject(i);
@@ -175,13 +187,34 @@ public class Jokes {
         catch (Exception ex){
             ex.printStackTrace();
         }
+        finally {
+            stmt.close();
+        }
+    }
+
+    public static void selectJoke(int id, Connection){
+        Statement stmt = null;
+        try{
+            String query = "SELECT * FROM jokes WHERE id = " + id;
+            stmt = connection.createStatement();
+
+            //execute query
+            ResultSet selectedJoke = stmt.executeQuery(query);
+            String setup = selectedJoke.getString("setup");
+            String delivery = selectedJoke.getString("delivery");
+            stmt.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     public static void deleteTuplesFromTable(Connection connection){
         Statement stmt = null;
 
         try {
-            //making a table in the DB
+            //deleting tuples from a table in the DB
             String query = "DELETE FROM jokes";
             stmt = connection.createStatement();
 
