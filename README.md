@@ -7,4 +7,5 @@ API: https://jokeapi.dev/
 Go to actuator-service dir
 
 First run app with maven using: `./mvnw spring-boot:run`
+
 Then run localhost: `curl localhost:8080/hello-world`
