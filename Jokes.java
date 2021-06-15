@@ -25,6 +25,7 @@ public class Jokes {
         try {
             String base = "https://v2.jokeapi.dev/joke/Any?%s";
             base = String.format(base, "blacklistFlags=nsfw,religious,political,racist,sexist,explicit&%s");
+            //base = String.format(base, "type=twopart&%s");  //make all jokes 2 parts?
             base = String.format(base, "amount=10");
             //System.out.print("URL is: " + base);
             URL url = new URL(base);
