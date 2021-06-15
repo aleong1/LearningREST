@@ -203,6 +203,8 @@ public class Jokes {
             String setup = selectedJoke.getString("setup");
             String delivery = selectedJoke.getString("delivery");
             stmt.close();
+
+            System.out.println("ID: " + id + "\n" + setup + "\n\t" + delivery);
         }
         catch (Exception e){
             e.printStackTrace();
