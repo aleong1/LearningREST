@@ -197,15 +197,13 @@ public class Jokes {
 
     public static void deleteTuplesFromTable(Connection connection){
         Statement stmt = null;
-
         try {
-            //deleting tuples from a table in the DB
+            //deleting all tuples from a table in the DB
             String query = "DELETE FROM jokes";
             stmt = connection.createStatement();
 
             //execute query:
             stmt.executeUpdate(query);
-
             System.out.println("Deleted tuples from table");
         }
         catch (Exception ex){
