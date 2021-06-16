@@ -7,10 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Jokes {
 
@@ -20,23 +17,15 @@ public class Jokes {
         BufferedReader read = null;
         String line;
         StringBuffer responseBack = new StringBuffer();
-        URL url = null;
 
         try {
             String base = "https://v2.jokeapi.dev/joke/Any?%s";
             base = String.format(base, "blacklistFlags=nsfw,religious,political,racist,sexist,explicit&%s");
-            //base = String.format(base, "type=twopart&%s");  //make all jokes 2 parts?
+            base = String.format(base, "type=twopart&%s");  //make all jokes 2 parts?
             base = String.format(base, "amount=10");
-            //System.out.print("URL is: " + base);
             URL url = new URL(base);
-            //URL url = new URL("https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&amount=10");
-        }
-        catch(MalformedURLException ex){
-            ex.printStackTrace();
-        }
 
-        try (connect = (HttpURLConnection) url.openConnection()){  //try with resources
-            //connect = (HttpURLConnection) url.openConnection();
+            connect = (HttpURLConnection) url.openConnection();  //try with resources only works with AutoCloseable functions
 
             //Setting up for requests
             connect.setRequestMethod("GET");
@@ -52,15 +41,18 @@ public class Jokes {
                 line = read.readLine();
             }
             //read.close(); //moved to finally block
-            //System.out.println(responseBack.toString());
-
             //reading(responseBack.toString());  //this is basically in insertToTable
 
             //make connection to postgreSQL
             Connection c = connectDB();
             makeTable(c);
             insertToTable(c, responseBack.toString());
-            //deleteTuplesFromTable(c);
+            selectJoke(1, c);
+            selectJoke(0, c);
+            deleteTuplesFromTable(c);
+        }
+        catch(MalformedURLException ex){
+            ex.printStackTrace();
         }
         catch(IOException ex) {
             ex.printStackTrace();
@@ -122,10 +114,6 @@ public class Jokes {
         catch (Exception ex){
             System.out.print(ex);
         }
-        finally {
-            connection.close();
-        }
-
         return connection;
     }
 
@@ -146,13 +134,17 @@ public class Jokes {
             ex.printStackTrace();
         }
         finally {
-            stmt.close();
+            try {
+                stmt.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 
 
     //inserting Jokes into DB table --> basically same as reading() but adding it to a table (try sep. first)
-    public static void insertToTable(Connection connection, String data){
+    public static void insertToTable(Connection connection, String data) {
         JSONObject jokes = new JSONObject(data);
         JSONArray listOfJokes = new JSONArray(jokes.getJSONArray("jokes"));
         Statement stmt = null;
@@ -163,23 +155,19 @@ public class Jokes {
                 JSONObject joke = listOfJokes.getJSONObject(i);
                 String type = joke.getString("type");
                 String category = joke.getString("category");
-                System.out.println(category + ":");
                 String query;
                 if (type.equals("twopart")) {
                     String setup = joke.getString("setup");
                     String delivery = joke.getString("delivery");
-                    System.out.println(setup + "\n\t" + delivery);
                     setup = setup.replace("'", "''");
                     delivery = delivery.replace("'", "''");
                     query = "INSERT INTO jokes(id, setup, delivery) VALUES(" + i + ", '" + setup + "' , '" + delivery + "')";
                 } else {
                     String delivery = joke.getString("joke");
-                    System.out.println(delivery);
                     delivery = delivery.replace("'", "''");
                     query = "INSERT INTO jokes(id, delivery) VALUES(" + i + ", '" + delivery + "')";
                 }
-                System.out.print("\n");
-                System.out.println("Query: " + query);
+                //System.out.println("Query: " + query);
                 stmt.executeUpdate(query);
             }
 
@@ -189,11 +177,15 @@ public class Jokes {
             ex.printStackTrace();
         }
         finally {
-            stmt.close();
+            try {
+                stmt.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 
-    public static void selectJoke(int id, Connection){
+    public static void selectJoke(int id, Connection connection){
         Statement stmt = null;
         try{
             String query = "SELECT * FROM jokes WHERE id = " + id;
@@ -201,17 +193,18 @@ public class Jokes {
 
             //execute query
             ResultSet selectedJoke = stmt.executeQuery(query);
-            String setup = selectedJoke.getString("setup");
-            String delivery = selectedJoke.getString("delivery");
+            if(selectedJoke.next()){
+                String setup = selectedJoke.getString("setup");
+                String delivery = selectedJoke.getString("delivery");
+                System.out.println("ID: " + id + "\n" + setup + "\n\t" + delivery);
+            }
             stmt.close();
-
-            System.out.println("ID: " + id + "\n" + setup + "\n\t" + delivery);
         }
         catch (Exception e){
             e.printStackTrace();
         }
-
     }
+
 
     public static void deleteTuplesFromTable(Connection connection){
         Statement stmt = null;
