@@ -7,7 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class GettingJokesApplication {
 
     public static void main(String[] args) {
+
+        AllJokes all = new AllJokes();
         SpringApplication.run(GettingJokesApplication.class, args);
+        //all.deleteTuplesFromTable();
     }
 
 }

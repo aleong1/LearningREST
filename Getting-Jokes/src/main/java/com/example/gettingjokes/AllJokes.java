@@ -1,4 +1,7 @@
+package com.example.gettingjokes;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -9,20 +12,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
 
-public class Jokes {
+public class AllJokes {
 
-    //defining connection
-    HttpURLConnection connect;
-    public static void main(String[] args) {
+    public AllJokes(){
+        load();
+    }
+
+    public void load() {
         BufferedReader read = null;
         String line;
         StringBuffer responseBack = new StringBuffer();
+
+        //defining connection
+        HttpURLConnection connect = null;
 
         try {
             String base = "https://v2.jokeapi.dev/joke/Any?%s";
             base = String.format(base, "blacklistFlags=nsfw,religious,political,racist,sexist,explicit&%s");
             base = String.format(base, "type=twopart&%s");
-            base = String.format(base, "amount=10");
+            base = String.format(base, "amount=20");
             URL url = new URL(base);
 
             connect = (HttpURLConnection) url.openConnection();  //try with resources only works with AutoCloseable functions
@@ -45,10 +53,11 @@ public class Jokes {
             //make connection to postgreSQL
             Connection c = connectDB();
             makeTable(c);
-            insertToTable(c, responseBack.toString());
-            //selectJoke(1, c);
-            //selectJoke(0, c);
-            //deleteTuplesFromTable(c);
+            try {
+                insertToTable(c, responseBack.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         catch(MalformedURLException ex){
             ex.printStackTrace();
@@ -67,8 +76,9 @@ public class Jokes {
         }
     }
 
-    //Going through data and adding it to db
-    public static void reading(String data){
+    /*
+    //Going through data and adding it to db (basically in inserttotable())
+    public void reading(String data){
         JSONObject jokes = new JSONObject(data);
         JSONArray listOfJokes = new JSONArray(jokes.getJSONArray("jokes"));
         for(int i = 0; i < listOfJokes.length(); i++){
@@ -83,9 +93,10 @@ public class Jokes {
             System.out.print("\n");
         }
     }
+     */
 
     //connecting to postgreSQL
-    public static Connection connectDB(){
+    public Connection connectDB(){
         Connection connection = null;
 
         try{
@@ -111,7 +122,7 @@ public class Jokes {
         return connection;
     }
 
-    public static void makeTable(Connection connection){
+    public void makeTable(Connection connection){
         Statement stmt = null;
 
         try {
@@ -138,9 +149,9 @@ public class Jokes {
 
 
     //inserting Jokes into DB table --> basically same as reading() but adding it to a table (try sep. first)
-    public static void insertToTable(Connection connection, String data) {
+    public void insertToTable(Connection connection, String data) throws JSONException {
         JSONObject jokes = new JSONObject(data);
-        JSONArray listOfJokes = new JSONArray(jokes.getJSONArray("jokes"));
+        JSONArray listOfJokes = jokes.getJSONArray("jokes");
         Statement stmt = null;
         try {
             stmt = connection.createStatement();
@@ -174,28 +185,8 @@ public class Jokes {
         }
     }
 
-    public static void selectJoke(int id, Connection connection){
-        Statement stmt = null;
-        try{
-            String query = "SELECT * FROM jokes WHERE id = " + id;
-            stmt = connection.createStatement();
-
-            //execute query
-            ResultSet selectedJoke = stmt.executeQuery(query);
-            if(selectedJoke.next()){
-                String setup = selectedJoke.getString("setup");
-                String delivery = selectedJoke.getString("delivery");
-                System.out.println("ID: " + id + "\n" + setup + "\n\t" + delivery);
-            }
-            stmt.close();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-
-    public static void deleteTuplesFromTable(Connection connection){
+    public void deleteTuplesFromTable(){
+        Connection connection = connectDB();
         Statement stmt = null;
         try {
             //deleting all tuples from a table in the DB
@@ -208,6 +199,13 @@ public class Jokes {
         }
         catch (Exception ex){
             ex.printStackTrace();
+        }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 }

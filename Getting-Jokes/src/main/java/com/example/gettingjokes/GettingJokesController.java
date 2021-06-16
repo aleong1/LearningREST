@@ -18,4 +18,14 @@ public class GettingJokesController {
         return j;
     }
 
+    @GetMapping("/list-jokes")
+    @ResponseBody
+    public List<Jokes> listJokes(){
+        List<Jokes> allJokes = new ArrayList<Jokes>();
+        for(int i = 0; i < 10; i++){
+            allJokes.add(new Jokes(i));
+        }
+        return allJokes;
+    }
+
 }
