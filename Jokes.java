@@ -21,7 +21,7 @@ public class Jokes {
         try {
             String base = "https://v2.jokeapi.dev/joke/Any?%s";
             base = String.format(base, "blacklistFlags=nsfw,religious,political,racist,sexist,explicit&%s");
-            base = String.format(base, "type=twopart&%s");  //make all jokes 2 parts?
+            base = String.format(base, "type=twopart&%s");
             base = String.format(base, "amount=10");
             URL url = new URL(base);
 
@@ -40,16 +40,15 @@ public class Jokes {
                 responseBack.append(line);
                 line = read.readLine();
             }
-            //read.close(); //moved to finally block
             //reading(responseBack.toString());  //this is basically in insertToTable
 
             //make connection to postgreSQL
             Connection c = connectDB();
             makeTable(c);
             insertToTable(c, responseBack.toString());
-            selectJoke(1, c);
-            selectJoke(0, c);
-            deleteTuplesFromTable(c);
+            //selectJoke(1, c);
+            //selectJoke(0, c);
+            //deleteTuplesFromTable(c);
         }
         catch(MalformedURLException ex){
             ex.printStackTrace();
@@ -77,15 +76,10 @@ public class Jokes {
             String type = joke.getString("type");
             String category = joke.getString("category");
             System.out.println(category + ":");
-            if (type.equals("twopart")){
-                String setup = joke.getString("setup");
-                String delivery = joke.getString("delivery");
-                System.out.println(setup + "\n\t" + delivery);
-            }
-            else{
-                String delivery = joke.getString("joke");
-                System.out.println(delivery);
-            }
+
+            String setup = joke.getString("setup");
+            String delivery = joke.getString("delivery");
+            System.out.println(setup + "\n\t" + delivery);
             System.out.print("\n");
         }
     }
@@ -149,25 +143,20 @@ public class Jokes {
         JSONArray listOfJokes = new JSONArray(jokes.getJSONArray("jokes"));
         Statement stmt = null;
         try {
-            stmt = connection.createStatement();  //try something called Prepared statement
+            stmt = connection.createStatement();
 
             for (int i = 0; i < listOfJokes.length(); i++) {
                 JSONObject joke = listOfJokes.getJSONObject(i);
                 String type = joke.getString("type");
                 String category = joke.getString("category");
                 String query;
-                if (type.equals("twopart")) {
-                    String setup = joke.getString("setup");
-                    String delivery = joke.getString("delivery");
-                    setup = setup.replace("'", "''");
-                    delivery = delivery.replace("'", "''");
-                    query = "INSERT INTO jokes(id, setup, delivery) VALUES(" + i + ", '" + setup + "' , '" + delivery + "')";
-                } else {
-                    String delivery = joke.getString("joke");
-                    delivery = delivery.replace("'", "''");
-                    query = "INSERT INTO jokes(id, delivery) VALUES(" + i + ", '" + delivery + "')";
-                }
-                //System.out.println("Query: " + query);
+
+                String setup = joke.getString("setup");
+                String delivery = joke.getString("delivery");
+                setup = setup.replace("'", "''");
+                delivery = delivery.replace("'", "''");
+                query = "INSERT INTO jokes(id, setup, delivery) VALUES(" + i + ", '" + setup + "' , '" + delivery + "')";
+
                 stmt.executeUpdate(query);
             }
 
