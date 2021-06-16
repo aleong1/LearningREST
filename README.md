@@ -18,6 +18,6 @@ First run app with maven using: `./mvnw spring-boot:run`
 
 To select a joke based off it's id in the database: `curl localhost:8080/select-jokes?id=__`
 
-*ID has to be [0,19] now*
+*ID has to be [0,9] now*
 
 To list all jokes: `curl localhost:8080/list-jokes`
