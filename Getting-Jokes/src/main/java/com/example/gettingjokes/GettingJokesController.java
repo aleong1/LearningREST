@@ -10,7 +10,7 @@ import java.util.List;
 
 @Controller
 public class GettingJokesController {
-    //Select Joke based off it's id in the database
+    //Select Joke based off its id in the database
     @GetMapping("/select-jokes")
     @ResponseBody
     public Jokes getJoke(@RequestParam(required = true, defaultValue = "0") Integer id){
