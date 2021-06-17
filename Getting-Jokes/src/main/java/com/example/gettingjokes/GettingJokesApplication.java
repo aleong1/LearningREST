@@ -10,7 +10,7 @@ public class GettingJokesApplication {
 
         AllJokes all = new AllJokes();
         SpringApplication.run(GettingJokesApplication.class, args);
-        //all.deleteTuplesFromTable();
+        //all.deleteTuplesFromTable();  //this deletes the tuples from the table before you have the chance to select and list them out
     }
 
 }

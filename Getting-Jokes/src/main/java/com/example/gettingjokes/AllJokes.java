@@ -22,7 +22,6 @@ public class AllJokes {
         BufferedReader read = null;
         String line;
         StringBuffer responseBack = new StringBuffer();
-
         //defining connection
         HttpURLConnection connect = null;
 
@@ -30,7 +29,7 @@ public class AllJokes {
             String base = "https://v2.jokeapi.dev/joke/Any?%s";
             base = String.format(base, "blacklistFlags=nsfw,religious,political,racist,sexist,explicit&%s");
             base = String.format(base, "type=twopart&%s");
-            base = String.format(base, "amount=20");
+            base = String.format(base, "amount=10");
             URL url = new URL(base);
 
             connect = (HttpURLConnection) url.openConnection();  //try with resources only works with AutoCloseable functions
@@ -39,8 +38,7 @@ public class AllJokes {
             connect.setRequestMethod("GET");
 
             //Getting a response:
-            int response = connect.getResponseCode();
-            //System.out.print(response);  //Returns 200 on success
+            int response = connect.getResponseCode();  //response will be 200 on success
 
             read = new BufferedReader(new InputStreamReader(connect.getInputStream()));  //reads the json response?
             line = read.readLine();
@@ -127,7 +125,7 @@ public class AllJokes {
 
         try {
             //making a table in the DB
-            String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar(200), delivery varchar(200))";
+            String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
             stmt = connection.createStatement();
 
             //execute query:
@@ -158,8 +156,7 @@ public class AllJokes {
 
             for (int i = 0; i < listOfJokes.length(); i++) {
                 JSONObject joke = listOfJokes.getJSONObject(i);
-                String type = joke.getString("type");
-                String category = joke.getString("category");
+                //String category = joke.getString("category");
                 String query;
 
                 String setup = joke.getString("setup");

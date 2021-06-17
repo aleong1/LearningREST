@@ -10,8 +10,8 @@ public class Jokes {
 
     public Jokes(int id){
         this.id = id;
-        this.delivery = findDelivery(id);
-        this.setup = findSetup(id);
+        this.delivery = findJoke(id, "delivery");
+        this.setup = findJoke(id, "setup");
     }
 
     public Jokes(int id, String setup, String delivery){
@@ -32,18 +32,30 @@ public class Jokes {
         return delivery;
     }
 
-    public String findSetup(int id) {
+    public String findJoke(int id, String type) {
         Connection c = connectDB();
         Statement stmt = null;
-        String setup = null;
+        String ret = null;
         try{
-            String query = "SELECT setup FROM jokes WHERE id = " + id;
+            String query;
+            if(type.equals("setup")){
+                query = "SELECT setup FROM jokes WHERE id = " + id;
+            }
+            else{
+                query = "SELECT delivery FROM jokes WHERE id = " + id;
+            }
+
             stmt = c.createStatement();
 
             //execute query
             ResultSet selectedJoke = stmt.executeQuery(query);
             if(selectedJoke.next()){
-                setup = selectedJoke.getString("setup");
+                if(type.equals("setup")){
+                    ret = selectedJoke.getString("setup");
+                }
+                else{
+                    ret = selectedJoke.getString("delivery");
+                }
             }
             stmt.close();
         }
@@ -55,38 +67,11 @@ public class Jokes {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return setup;
-    }
-
-    public String findDelivery(int id) {
-        Connection c = connectDB();
-        Statement stmt = null;
-        String delivery = null;
-        try{
-            String query = "SELECT delivery FROM jokes WHERE id = " + id;
-            stmt = c.createStatement();
-
-            //execute query
-            ResultSet selectedJoke = stmt.executeQuery(query);
-            if(selectedJoke.next()){
-                delivery = selectedJoke.getString("delivery");
-            }
-            stmt.close();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        try {
-            c.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return delivery;
+        return ret;
     }
 
     public static Connection connectDB(){
         Connection connection = null;
-
         try{
             //Register driver class: postgreSQL
             Class.forName("org.postgresql.Driver");
