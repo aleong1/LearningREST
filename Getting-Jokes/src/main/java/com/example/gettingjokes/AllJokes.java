@@ -73,25 +73,7 @@ public class AllJokes {
             connect.disconnect();
         }
     }
-
-    /*
-    //Going through data and adding it to db (basically in inserttotable())
-    public void reading(String data){
-        JSONObject jokes = new JSONObject(data);
-        JSONArray listOfJokes = new JSONArray(jokes.getJSONArray("jokes"));
-        for(int i = 0; i < listOfJokes.length(); i++){
-            JSONObject joke = listOfJokes.getJSONObject(i);
-            String type = joke.getString("type");
-            String category = joke.getString("category");
-            System.out.println(category + ":");
-
-            String setup = joke.getString("setup");
-            String delivery = joke.getString("delivery");
-            System.out.println(setup + "\n\t" + delivery);
-            System.out.print("\n");
-        }
-    }
-     */
+    
 
     //connecting to postgreSQL
     public Connection connectDB(){
