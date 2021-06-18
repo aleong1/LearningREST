@@ -163,6 +163,53 @@ public class AllJokes {
         }
     }
 
+    public int nextId(){
+        Connection connection = connectDB();
+        Statement stmt = null;
+        int id = 0;
+        try {
+            //deleting all tuples from a table in the DB
+            String query = "SELECT max(id) as maxInt FROM jokes";
+            stmt = connection.createStatement();
+
+            //execute query:
+            ResultSet res = stmt.executeQuery(query);
+            if(res.next()){
+                id = res.getInt("maxInt");
+                id++;
+            }
+            stmt.close();
+            return id;
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+        return id;
+    }
+
+    public void addJoke(NewJoke joke){
+        Connection connection = connectDB();
+        Statement stmt = null;
+        try{
+            String query = "INSERT INTO jokes(id, setup, delivery) VALUES(" + nextId() + ", '" + joke.getSetup() + "', '" + joke.getDelivery() + "')";
+            stmt = connection.createStatement();
+            System.out.println("Query: " + query);
+            stmt.executeUpdate(query);
+            System.out.println("Added Joke");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+    //this deletes all tuples
     public void deleteTuplesFromTable(){
         Connection connection = connectDB();
         Statement stmt = null;

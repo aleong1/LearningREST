@@ -20,17 +20,39 @@ public class GettingJokesController {
     @ResponseBody
     public List<Jokes> listJokes(){
         List<Jokes> allJokes = new ArrayList<Jokes>();
-        for(int i = 0; i < 10; i++){
-            allJokes.add(new Jokes(i));
+        AllJokes j = new AllJokes();
+        int size = j.nextId();
+        for(int i = 0; i < size; i++){
+            Jokes tmp = new Jokes(i);
+            if(tmp.getSetup() != null){
+                allJokes.add(new Jokes(i));
+            }
         }
         return allJokes;
     }
 
-    @PostMapping("/addJoke")
+    @PostMapping("/add-Joke")
+    @ResponseBody
     public String insertJoke(@RequestBody NewJoke joke){
         AllJokes db = new AllJokes();
         db.addJoke(joke);
         return "Added joke";
+    }
+
+    @DeleteMapping("/delete-joke")
+    @ResponseBody
+    public String deleteJoke(@RequestParam(required = true) Integer id){
+        AllJokes db = new AllJokes();
+        db.deleteJoke(id);
+        return "Deleted joke with id " + id;
+    }
+
+    @DeleteMapping("/delete-all-jokes")
+    @ResponseBody
+    public String deleteAllJokes(){
+        AllJokes db = new AllJokes();
+        db.deleteTuplesFromTable();
+        return "Deleted all jokes";
     }
 
 }
