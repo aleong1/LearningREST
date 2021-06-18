@@ -28,3 +28,5 @@ To select a joke based off it's id in the database: `curl localhost:8080/select-
 To list all jokes: `curl localhost:8080/list-jokes`
 
 *After running the app once the jokes aren't deleted since if I delete the jokes in the app there is no time to select/list a joke so they have to be manually deleted before being run again. (Any way to wait for jokes to be deleted after being done looking through the endpoints?)
+
+To add another joke:
