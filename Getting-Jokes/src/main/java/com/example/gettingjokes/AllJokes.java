@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.xml.transform.Result;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,9 +15,7 @@ import java.sql.*;
 
 public class AllJokes {
 
-    public AllJokes(){
-        load();
-    }
+    public AllJokes(){};
 
     public void load() {
         BufferedReader read = null;
@@ -73,7 +72,7 @@ public class AllJokes {
             connect.disconnect();
         }
     }
-    
+
 
     //connecting to postgreSQL
     public Connection connectDB(){

@@ -1,9 +1,7 @@
 package com.example.gettingjokes;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,13 @@ public class GettingJokesController {
             allJokes.add(new Jokes(i));
         }
         return allJokes;
+    }
+
+    @PostMapping("/addJoke")
+    public String insertJoke(@RequestBody NewJoke joke){
+        AllJokes db = new AllJokes();
+        db.addJoke(joke);
+        return "Added joke";
     }
 
 }
