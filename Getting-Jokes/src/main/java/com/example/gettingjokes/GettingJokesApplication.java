@@ -9,9 +9,10 @@ public class GettingJokesApplication {
     public static void main(String[] args) {
 
         AllJokes all = new AllJokes();
+        all.deleteTuplesFromTable();
         all.load();
         SpringApplication.run(GettingJokesApplication.class, args);
-        //all.deleteTuplesFromTable();
+
     }
 
 }
