@@ -54,5 +54,4 @@ public class GettingJokesController {
         db.deleteTuplesFromTable();
         return "Deleted all jokes";
     }
-
 }
