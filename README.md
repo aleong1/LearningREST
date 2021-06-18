@@ -29,8 +29,6 @@ To select a joke based off it's id in the database: `curl localhost:8080/select-
 
 To list all jokes: `curl localhost:8080/list-jokes`
 
-*After running the app once the jokes aren't deleted since if I delete the jokes in the app there is no time to select/list a joke so they have to be manually deleted before being run again. (Any way to wait for jokes to be deleted after being done looking through the endpoints?)
-
 To add your own joke:
 
 `curl -X POST -H "Content-Type:application/json" -d "{\"setup\": \"[first part]\", \"delivery\": \"[second part]\" }" localhost:8080/addJoke`
@@ -39,4 +37,8 @@ To add your own joke:
 
 Apparently for Windows you need a `\` before each `"` in the JSON input
 
-To delete a joke based off its id: 
+To delete a joke based off its id: `curl -X "DELETE" localhost:8080/delete-joke?id=[id num]`
+
+*replace [id num] with the id number of the joke you want to delete*
+
+To delete all jokes in the table: `curl -X "DELETE" localhost:8080/delete-all-jokes`
