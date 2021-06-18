@@ -9,7 +9,7 @@ public class GettingJokesApplication {
     public static void main(String[] args) {
 
         AllJokes all = new AllJokes();
-        all.deleteTuplesFromTable();
+        all.deleteTuplesFromTable();  //delete tuples so there are no repeated ids
         all.load();
         SpringApplication.run(GettingJokesApplication.class, args);
 
