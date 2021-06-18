@@ -45,7 +45,6 @@ public class AllJokes {
                 responseBack.append(line);
                 line = read.readLine();
             }
-            //reading(responseBack.toString());  //this is basically in insertToTable
 
             //make connection to postgreSQL
             Connection c = connectDB();
@@ -72,7 +71,6 @@ public class AllJokes {
             connect.disconnect();
         }
     }
-
 
     //connecting to postgreSQL
     public Connection connectDB(){
@@ -126,8 +124,7 @@ public class AllJokes {
         }
     }
 
-
-    //inserting Jokes into DB table --> basically same as reading() but adding it to a table (try sep. first)
+    //inserting Jokes into DB table
     public void insertToTable(Connection connection, String data) throws JSONException {
         JSONObject jokes = new JSONObject(data);
         JSONArray listOfJokes = jokes.getJSONArray("jokes");
@@ -206,8 +203,35 @@ public class AllJokes {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
     }
-    
+
+    //delete Joke by id
+    public void deleteJoke(int id){
+        Connection connection = connectDB();
+        Statement stmt = null;
+        try{
+            String query = "DELETE FROM jokes WHERE id = " + id;
+            stmt = connection.createStatement();
+            stmt.executeUpdate(query);
+            System.out.println("Deleted Joke");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+    }
 
     //this deletes all tuples
     public void deleteTuplesFromTable(){

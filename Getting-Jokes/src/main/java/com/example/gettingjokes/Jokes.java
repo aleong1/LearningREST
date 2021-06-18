@@ -33,8 +33,9 @@ public class Jokes {
     }
 
     public String findJoke(int id, String type) {
-        Connection c = connectDB();
-        Statement stmt = null;
+        AllJokes tmp = new AllJokes();
+        Connection c = tmp.connectDB();
+        Statement stmt;
         String ret = null;
         try{
             String query;
@@ -68,31 +69,6 @@ public class Jokes {
             throwables.printStackTrace();
         }
         return ret;
-    }
-
-    public static Connection connectDB(){
-        Connection connection = null;
-        try{
-            //Register driver class: postgreSQL
-            Class.forName("org.postgresql.Driver");
-
-            //establishing a connection
-            String user = "aleong";
-            String pass = "aleong";
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", user, pass);
-
-            //Testing connection:
-            if (connection != null){
-                System.out.println("Successfully connected");
-            }
-            else{
-                System.out.println("Failed to connect");
-            }
-        }
-        catch (Exception ex){
-            System.out.print(ex);
-        }
-        return connection;
     }
 
 }

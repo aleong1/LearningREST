@@ -12,7 +12,7 @@ public class GettingJokesController {
     @GetMapping("/select-jokes")
     @ResponseBody
     public Jokes getJoke(@RequestParam(required = true, defaultValue = "0") Integer id){
-        Jokes j = new Jokes(id);
+        Jokes j = new Jokes(id);  //this way it outputs a JSON?
         return j;
     }
 
