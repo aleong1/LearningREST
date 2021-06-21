@@ -29,10 +29,11 @@ In another terminal to Getting-Jokes dir:
 
 #### To list all jokes: `curl localhost:8080/list-jokes`
 
-#### To add your own joke:
-`curl -X POST -H "Content-Type:application/json" -d "{\"setup\": \"[first part]\", \"delivery\": \"[second part]\" }" localhost:8080/addJoke`
+#### To add your own joke: `curl -X POST -H "Content-Type:application/json" -d "{\"id\": [id num], \"setup\": \"[first part]\", \"delivery\": \"[second part]\" }" localhost:8080/add-joke`
 
-*replace [first part] and [second part] with the first and second parts of the joke you want to add*
+*replace [first part] and [second part] with the first and second parts of the joke you want to add and replace [id num] with an integer.*
+
+*[id num] is there to follow vars the Joke class, the inputted id num will be ignored and the joke will be given an id num based off the ids already in the table*
 
 Apparently for Windows you need a `\` before each `"` in the JSON input
 
