@@ -1,7 +1,5 @@
 package com.example.gettingjokes;
 
-import java.sql.*;
-
 public class Joke {
 
     private int id;
@@ -10,8 +8,9 @@ public class Joke {
 
     public Joke(int id){
         this.id = id;
-        this.delivery = findJoke(id, "delivery");
-        this.setup = findJoke(id, "setup");
+        GettingJokesService tmp = new GettingJokesService();
+        this.delivery = tmp.findJoke(id, "delivery");
+        this.setup = tmp.findJoke(id, "setup");
     }
 
     public Joke(int id, String setup, String delivery){
@@ -32,6 +31,7 @@ public class Joke {
         return delivery;
     }
 
+    /*
     public String findJoke(int id, String type) {
         AllJokes tmp = new AllJokes();
         Connection c = tmp.connectDB();
@@ -70,5 +70,6 @@ public class Joke {
         }
         return ret;
     }
+     */
 
 }

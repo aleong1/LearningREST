@@ -20,7 +20,7 @@ public class GettingJokesController {
     @ResponseBody
     public List<Joke> listJokes(){
         List<Joke> allJokes = new ArrayList<Joke>();
-        AllJokes j = new AllJokes();
+        GettingJokesService j = new GettingJokesService();
         int size = j.nextId();
         for(int i = 0; i < size; i++){
             Joke tmp = new Joke(i);
@@ -34,7 +34,7 @@ public class GettingJokesController {
     @PostMapping("/add-joke")
     @ResponseBody
     public String insertJoke(@RequestBody Joke joke){
-        AllJokes db = new AllJokes();
+        GettingJokesService db = new GettingJokesService();
         db.addJoke(joke);
         return "Added joke";
     }
@@ -42,7 +42,7 @@ public class GettingJokesController {
     @DeleteMapping("/delete-joke")
     @ResponseBody
     public String deleteJoke(@RequestParam(required = true) Integer id){
-        AllJokes db = new AllJokes();
+        GettingJokesService db = new GettingJokesService();
         db.deleteJoke(id);
         return "Deleted joke with id " + id;
     }
@@ -50,7 +50,7 @@ public class GettingJokesController {
     @DeleteMapping("/delete-all-jokes")
     @ResponseBody
     public String deleteAllJokes(){
-        AllJokes db = new AllJokes();
+        GettingJokesService db = new GettingJokesService();
         db.deleteTuplesFromTable();
         return "Deleted all jokes";
     }

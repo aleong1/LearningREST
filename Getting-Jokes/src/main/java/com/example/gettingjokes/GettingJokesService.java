@@ -3,8 +3,8 @@ package com.example.gettingjokes;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
-import javax.xml.transform.Result;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,9 +13,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
 
-public class AllJokes {
+@Service
+public class GettingJokesService {
 
-    public AllJokes(){};
+    public GettingJokesService(){};
 
     public void load() {
         BufferedReader read = null;
@@ -256,5 +257,44 @@ public class AllJokes {
                 throwables.printStackTrace();
             }
         }
+    }
+
+    public String findJoke(int id, String type) {
+        GettingJokesService tmp = new GettingJokesService();
+        Connection c = tmp.connectDB();
+        Statement stmt;
+        String ret = null;
+        try{
+            String query;
+            if(type.equals("setup")){
+                query = "SELECT setup FROM jokes WHERE id = " + id;
+            }
+            else{
+                query = "SELECT delivery FROM jokes WHERE id = " + id;
+            }
+
+            stmt = c.createStatement();
+
+            //execute query
+            ResultSet selectedJoke = stmt.executeQuery(query);
+            if(selectedJoke.next()){
+                if(type.equals("setup")){
+                    ret = selectedJoke.getString("setup");
+                }
+                else{
+                    ret = selectedJoke.getString("delivery");
+                }
+            }
+            stmt.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        try {
+            c.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return ret;
     }
 }
