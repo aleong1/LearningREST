@@ -9,7 +9,7 @@ import java.util.List;
 @Controller
 public class GettingJokesController {
     //Select Joke based off its id in the database
-    @GetMapping("/select-jokes")
+    @GetMapping("/select-joke")
     @ResponseBody
     public Joke getJoke(@RequestParam(required = true, defaultValue = "0") Integer id){
         Joke j = new Joke(id);  //this way it outputs a JSON?

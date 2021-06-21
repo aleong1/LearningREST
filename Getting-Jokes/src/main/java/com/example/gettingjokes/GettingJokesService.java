@@ -3,6 +3,8 @@ package com.example.gettingjokes;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -16,10 +18,13 @@ import java.sql.*;
 @Service
 public class GettingJokesService {
 
+    //@Autowired
+    //private JdbcTemplate jdbcTemplate;
+
     public GettingJokesService(){};
 
     public void load() {
-        BufferedReader read = null;
+        //BufferedReader read = null;
         String line;
         StringBuffer responseBack = new StringBuffer();
         //defining connection
@@ -40,21 +45,23 @@ public class GettingJokesService {
             //Getting a response:
             int response = connect.getResponseCode();  //response will be 200 on success
 
-            read = new BufferedReader(new InputStreamReader(connect.getInputStream()));  //reads the json response?
-            line = read.readLine();
-            while(line != null){
-                responseBack.append(line);
+            //read = new BufferedReader(new InputStreamReader(connect.getInputStream()));  //reads the json response?
+            try (BufferedReader read = new BufferedReader(new InputStreamReader(connect.getInputStream()))) {
                 line = read.readLine();
-            }
+                while (line != null) {
+                    responseBack.append(line);
+                    line = read.readLine();
+                }
 
-            //make connection to postgreSQL
-            Connection c = connectDB();
-            makeTable(c);
-            try {
-                insertToTable(c, responseBack.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+                //make connection to postgreSQL
+                Connection c = connectDB();
+                makeTable(c);
+                try {
+                    insertToTable(c, responseBack.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } //end of try with resources
         }
         catch(MalformedURLException ex){
             ex.printStackTrace();
@@ -63,12 +70,14 @@ public class GettingJokesService {
             ex.printStackTrace();
         }
         finally {
+            /*
             try{
                 read.close();
             }
             catch (IOException e){
                 e.printStackTrace();
             }
+             */
             connect.disconnect();
         }
     }
