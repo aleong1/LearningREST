@@ -31,9 +31,9 @@ public class GettingJokesController {
         return allJokes;
     }
 
-    @PostMapping("/add-Joke")
+    @PostMapping("/add-joke")
     @ResponseBody
-    public String insertJoke(@RequestBody NewJoke joke){
+    public String insertJoke(@RequestBody Joke joke){
         AllJokes db = new AllJokes();
         db.addJoke(joke);
         return "Added joke";

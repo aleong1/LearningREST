@@ -191,7 +191,7 @@ public class AllJokes {
         return id;
     }
 
-    public void addJoke(NewJoke joke){
+    public void addJoke(Joke joke){
         Connection connection = connectDB();
         Statement stmt = null;
         try{
