@@ -11,21 +11,21 @@ public class GettingJokesController {
     //Select Joke based off its id in the database
     @GetMapping("/select-jokes")
     @ResponseBody
-    public Jokes getJoke(@RequestParam(required = true, defaultValue = "0") Integer id){
-        Jokes j = new Jokes(id);  //this way it outputs a JSON?
+    public Joke getJoke(@RequestParam(required = true, defaultValue = "0") Integer id){
+        Joke j = new Joke(id);  //this way it outputs a JSON?
         return j;
     }
 
     @GetMapping("/list-jokes")
     @ResponseBody
-    public List<Jokes> listJokes(){
-        List<Jokes> allJokes = new ArrayList<Jokes>();
+    public List<Joke> listJokes(){
+        List<Joke> allJokes = new ArrayList<Joke>();
         AllJokes j = new AllJokes();
         int size = j.nextId();
         for(int i = 0; i < size; i++){
-            Jokes tmp = new Jokes(i);
+            Joke tmp = new Joke(i);
             if(tmp.getSetup() != null){
-                allJokes.add(new Jokes(i));
+                allJokes.add(new Joke(i));
             }
         }
         return allJokes;

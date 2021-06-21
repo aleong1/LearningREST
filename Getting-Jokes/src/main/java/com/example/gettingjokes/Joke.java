@@ -2,19 +2,19 @@ package com.example.gettingjokes;
 
 import java.sql.*;
 
-public class Jokes {
+public class Joke {
 
     private int id;
     private String setup;
     private String delivery;
 
-    public Jokes(int id){
+    public Joke(int id){
         this.id = id;
         this.delivery = findJoke(id, "delivery");
         this.setup = findJoke(id, "setup");
     }
 
-    public Jokes(int id, String setup, String delivery){
+    public Joke(int id, String setup, String delivery){
         this.delivery = delivery;
         this.setup = setup;
         this.id = id;
