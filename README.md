@@ -21,7 +21,7 @@ First run app with maven using: `mvnw spring-boot:run`
 
 In another terminal to Getting-Jokes dir:
 
-#### To select a joke based off it's id in the database: `curl localhost:8080/select-jokes?id=[id num]`
+#### To select a joke based off it's id in the database: `curl localhost:8080/select-joke?id=[id num]`
 
 *ID has to be [0,9]*
 
