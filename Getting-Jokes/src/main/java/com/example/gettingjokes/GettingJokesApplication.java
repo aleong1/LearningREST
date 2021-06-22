@@ -27,9 +27,12 @@ public class GettingJokesApplication implements CommandLineRunner {
 
     }
 
+    @Autowired
+    private GettingJokesService all;
+
     @Override
     public void run(String... args) throws Exception {
-        GettingJokesService all = new GettingJokesService();
+        //GettingJokesService all = new GettingJokesService();
         all.deleteTuplesFromTable();  //delete tuples at beginning so there are no repeated ids when inserting
         all.load();
     }

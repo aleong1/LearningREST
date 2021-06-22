@@ -107,7 +107,6 @@ public class GettingJokesService {
         return connection;
     }
 
-    /*
     //with jdbc
     public void makeTable(Connection connection){
         //making a table in the DB
@@ -116,9 +115,9 @@ public class GettingJokesService {
         jdbcTemplate.execute(query);  //null pointer exception
         System.out.println("Made table");
     }
-    */
 
-    ///* without jdbc
+
+    /* without jdbc
     public void makeTable(Connection connection){
         Statement stmt = null;
 
@@ -143,7 +142,7 @@ public class GettingJokesService {
             }
         }
     }
-    //*/
+    */
 
     //inserting Jokes into DB table
     public void insertToTable(Connection connection, String data) throws JSONException {
@@ -258,6 +257,18 @@ public class GettingJokesService {
         }
     }
 
+
+    //this deletes all tuples with jdbc
+    public void deleteTuplesFromTable(){
+        //deleting all tuples from a table in the DB
+        String query = "DELETE FROM jokes";
+
+        jdbcTemplate.execute(query);
+        System.out.println("Deleted tuples from table");
+    }
+
+
+    /*
     //this deletes all tuples
     public void deleteTuplesFromTable(){
         Connection connection = connectDB();
@@ -275,7 +286,6 @@ public class GettingJokesService {
         catch (Exception ex){
             ex.printStackTrace();
         }
-       // /*
         finally {
             try {
                 connection.close();
@@ -283,8 +293,8 @@ public class GettingJokesService {
                 throwables.printStackTrace();
             }
         }
-        // */
     }
+    */
 
     public String findJoke(int id, String type) {
         GettingJokesService tmp = new GettingJokesService();
