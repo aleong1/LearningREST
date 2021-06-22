@@ -10,11 +10,10 @@ import java.util.List;
 @Controller
 public class GettingJokesController {
 
-    /*
+
     @Autowired
     private GettingJokesService serv;
-
-     */
+    private Joke j;
 
     //Select Joke based off its id in the database
     @GetMapping("/select-joke")
@@ -52,18 +51,18 @@ public class GettingJokesController {
     @DeleteMapping("/delete-joke")
     @ResponseBody
     public String deleteJoke(@RequestParam(required = true) Integer id){
-        GettingJokesService db = new GettingJokesService();
-        db.deleteJoke(id);
-        //serv.deleteJoke(id);
+        //GettingJokesService db = new GettingJokesService();
+        //db.deleteJoke(id);
+        serv.deleteJoke(id);
         return "Deleted joke with id " + id;
     }
 
     @DeleteMapping("/delete-all-jokes")
     @ResponseBody
     public String deleteAllJokes(){
-        GettingJokesService db = new GettingJokesService();
-        db.deleteTuplesFromTable();
-        //serv.deleteTuplesFromTable();
+        //GettingJokesService db = new GettingJokesService();
+        //db.deleteTuplesFromTable();
+        serv.deleteTuplesFromTable();
         return "Deleted all jokes";
     }
 }

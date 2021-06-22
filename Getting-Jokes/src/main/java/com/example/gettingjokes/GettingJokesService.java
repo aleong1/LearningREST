@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,6 @@ public class GettingJokesService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     public GettingJokesService(){}
 
@@ -59,7 +55,7 @@ public class GettingJokesService {
                 //make connection to postgreSQL
                 Connection c = connectDB();
                 //Connection c = null;
-                makeTable(c);
+                makeTable();
                 try {
                     insertToTable(c, responseBack.toString());
                 } catch (JSONException e) {
@@ -108,41 +104,13 @@ public class GettingJokesService {
     }
 
     //with jdbc
-    public void makeTable(Connection connection){
+    public void makeTable(){
         //making a table in the DB
         String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
-
         jdbcTemplate.execute(query);  //null pointer exception
         System.out.println("Made table");
     }
 
-
-    /* without jdbc
-    public void makeTable(Connection connection){
-        Statement stmt = null;
-
-        try {
-            //making a table in the DB
-            String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
-
-            stmt = connection.createStatement();
-            //execute query:
-            stmt.executeUpdate(query);
-
-            System.out.println("Made table");
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-        finally {
-            try {
-                stmt.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
-    }
-    */
 
     //inserting Jokes into DB table
     public void insertToTable(Connection connection, String data) throws JSONException {
@@ -238,70 +206,28 @@ public class GettingJokesService {
 
     //delete Joke by id
     public void deleteJoke(int id){
-        Connection connection = connectDB();
-        Statement stmt = null;
-        try{
-            String query = "DELETE FROM jokes WHERE id = " + id;
-            stmt = connection.createStatement();
-            stmt.executeUpdate(query);
-            System.out.println("Deleted Joke");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                connection.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
+        String query = "DELETE FROM jokes WHERE id = " + id;
+        jdbcTemplate.execute(query);
+        System.out.println("Deleted Joke");
     }
-
 
     //this deletes all tuples with jdbc
     public void deleteTuplesFromTable(){
         //deleting all tuples from a table in the DB
         String query = "DELETE FROM jokes";
-
         jdbcTemplate.execute(query);
         System.out.println("Deleted tuples from table");
     }
 
-
-    /*
-    //this deletes all tuples
-    public void deleteTuplesFromTable(){
-        Connection connection = connectDB();
-        Statement stmt = null;
-        try {
-            //deleting all tuples from a table in the DB
-            String query = "DELETE FROM jokes";
-            stmt = connection.createStatement();
-
-            //execute query:
-            stmt.executeUpdate(query);
-            //jdbcTemplate.execute(query);
-            System.out.println("Deleted tuples from table");
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-        finally {
-            try {
-                connection.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
-    }
-    */
-
     public String findJoke(int id, String type) {
+        /*
         GettingJokesService tmp = new GettingJokesService();
         Connection c = tmp.connectDB();
         Statement stmt;
+        */
+
         String ret = null;
-        try{
+        //try{
             String query;
             if(type.equals("setup")){
                 query = "SELECT setup FROM jokes WHERE id = " + id;
@@ -310,9 +236,15 @@ public class GettingJokesService {
                 query = "SELECT delivery FROM jokes WHERE id = " + id;
             }
 
-            stmt = c.createStatement();
+            ret = jdbcTemplate.queryForObject(query, String.class, new Object[]{id});
+
+            System.out.println("Ret: " + ret);
+                    //queryForObject(query, new Object[] { id }, String.class);
+
+            //stmt = c.createStatement();
 
             //execute query
+        /*
             ResultSet selectedJoke = stmt.executeQuery(query);
             if(selectedJoke.next()){
                 if(type.equals("setup")){
@@ -323,6 +255,8 @@ public class GettingJokesService {
                 }
             }
             stmt.close();
+
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -332,6 +266,9 @@ public class GettingJokesService {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+         */
         return ret;
     }
+
 }

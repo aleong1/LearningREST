@@ -1,14 +1,19 @@
 package com.example.gettingjokes;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class Joke {
 
     private int id;
     private String setup;
     private String delivery;
 
+    @Autowired
+    private GettingJokesService tmp;
+
     public Joke(int id){
         this.id = id;
-        GettingJokesService tmp = new GettingJokesService();
+        //GettingJokesService tmp = new GettingJokesService();
         this.delivery = tmp.findJoke(id, "delivery");
         this.setup = tmp.findJoke(id, "setup");
     }
