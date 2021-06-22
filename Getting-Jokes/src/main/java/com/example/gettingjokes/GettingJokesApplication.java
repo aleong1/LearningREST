@@ -11,9 +11,10 @@ public class GettingJokesApplication {
     /*
     @Autowired
     private static JdbcTemplate jdbcTemplate;
-    @Autowired
-    private static GettingJokesService all = new GettingJokesService(jdbcTemplate);
     */
+    //@Autowired
+    //private static GettingJokesService all = new GettingJokesService();
+
 
     public static void main(String[] args) {
 
@@ -24,6 +25,5 @@ public class GettingJokesApplication {
         SpringApplication.run(GettingJokesApplication.class, args);
 
     }
-
 
 }

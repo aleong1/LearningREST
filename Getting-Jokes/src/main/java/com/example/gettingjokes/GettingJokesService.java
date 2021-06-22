@@ -21,7 +21,7 @@ public class GettingJokesService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public GettingJokesService(){};
+    public GettingJokesService(){}
 
     public GettingJokesService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -123,10 +123,13 @@ public class GettingJokesService {
             jdbcTemplate.execute(query);  //null pointer exception
 
             System.out.println("Made table");
-        //}
-        //catch (Exception ex){
-        //    ex.printStackTrace();
-        //}
+            /*
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+             */
 /*
         finally {
             try {
@@ -137,7 +140,6 @@ public class GettingJokesService {
         }
 
  */
-
     }
 
     //inserting Jokes into DB table
@@ -160,7 +162,7 @@ public class GettingJokesService {
                 query = "INSERT INTO jokes(id, setup, delivery) VALUES(" + i + ", '" + setup + "' , '" + delivery + "')";
 
                 stmt.executeUpdate(query);
-                //jdbcTemplate.update(query);
+                //jdbcTemplate.update(query);  //null pointer exception
             }
 
             System.out.println("Inserted successfully");
