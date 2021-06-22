@@ -10,8 +10,11 @@ import java.util.List;
 @Controller
 public class GettingJokesController {
 
+    /*
     @Autowired
     private GettingJokesService serv;
+
+     */
 
     //Select Joke based off its id in the database
     @GetMapping("/select-joke")
@@ -25,8 +28,9 @@ public class GettingJokesController {
     @ResponseBody
     public List<Joke> listJokes(){
         List<Joke> allJokes = new ArrayList<Joke>();
-        //GettingJokesService j = new GettingJokesService();
-        int size = serv.nextId();
+        GettingJokesService j = new GettingJokesService();
+        int size = j.nextId();
+        //int size = serv.nextId();
         for(int i = 0; i < size; i++){
             Joke tmp = new Joke(i);
             if(tmp.getSetup() != null){
@@ -39,24 +43,27 @@ public class GettingJokesController {
     @PostMapping("/add-joke")
     @ResponseBody
     public String insertJoke(@RequestBody Joke joke){
-        //GettingJokesService db = new GettingJokesService();
-        serv.addJoke(joke);
+        GettingJokesService db = new GettingJokesService();
+        db.addJoke(joke);
+        //serv.addJoke(joke);
         return "Added joke";
     }
 
     @DeleteMapping("/delete-joke")
     @ResponseBody
     public String deleteJoke(@RequestParam(required = true) Integer id){
-        //GettingJokesService db = new GettingJokesService();
-        serv.deleteJoke(id);
+        GettingJokesService db = new GettingJokesService();
+        db.deleteJoke(id);
+        //serv.deleteJoke(id);
         return "Deleted joke with id " + id;
     }
 
     @DeleteMapping("/delete-all-jokes")
     @ResponseBody
     public String deleteAllJokes(){
-        //GettingJokesService db = new GettingJokesService();
-        serv.deleteTuplesFromTable();
+        GettingJokesService db = new GettingJokesService();
+        db.deleteTuplesFromTable();
+        //serv.deleteTuplesFromTable();
         return "Deleted all jokes";
     }
 }
