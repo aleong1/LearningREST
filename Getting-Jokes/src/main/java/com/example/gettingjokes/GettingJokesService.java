@@ -18,13 +18,20 @@ import java.sql.*;
 @Service
 public class GettingJokesService {
 
-    //@Autowired
-    //private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     public GettingJokesService(){};
 
+    public GettingJokesService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Autowired
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     public void load() {
-        //BufferedReader read = null;
         String line;
         StringBuffer responseBack = new StringBuffer();
         //defining connection
@@ -45,8 +52,7 @@ public class GettingJokesService {
             //Getting a response:
             int response = connect.getResponseCode();  //response will be 200 on success
 
-            //read = new BufferedReader(new InputStreamReader(connect.getInputStream()));  //reads the json response?
-            try (BufferedReader read = new BufferedReader(new InputStreamReader(connect.getInputStream()))) {
+            try (BufferedReader read = new BufferedReader(new InputStreamReader(connect.getInputStream()))) {  //reads the json response
                 line = read.readLine();
                 while (line != null) {
                     responseBack.append(line);
@@ -54,7 +60,8 @@ public class GettingJokesService {
                 }
 
                 //make connection to postgreSQL
-                Connection c = connectDB();
+                //Connection c = connectDB();
+                Connection c = null;
                 makeTable(c);
                 try {
                     insertToTable(c, responseBack.toString());
@@ -69,17 +76,11 @@ public class GettingJokesService {
         catch(IOException ex) {
             ex.printStackTrace();
         }
+        /*
         finally {
-            /*
-            try{
-                read.close();
-            }
-            catch (IOException e){
-                e.printStackTrace();
-            }
-             */
             connect.disconnect();
         }
+         */
     }
 
     //connecting to postgreSQL
@@ -97,7 +98,7 @@ public class GettingJokesService {
 
             //Testing connection:
             if (connection != null){
-                System.out.println("Successfully connected");
+                System.out.println("Successfully connected to database");
             }
             else{
                 System.out.println("Failed to connect");
@@ -115,16 +116,22 @@ public class GettingJokesService {
         try {
             //making a table in the DB
             String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
+            /*
             stmt = connection.createStatement();
 
             //execute query:
             stmt.executeUpdate(query);
+
+             */
+
+            this.jdbcTemplate.execute(query);  //null pointer exception
 
             System.out.println("Made table");
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
+/*
         finally {
             try {
                 stmt.close();
@@ -132,6 +139,9 @@ public class GettingJokesService {
                 throwables.printStackTrace();
             }
         }
+
+ */
+
     }
 
     //inserting Jokes into DB table
@@ -154,6 +164,7 @@ public class GettingJokesService {
                 query = "INSERT INTO jokes(id, setup, delivery) VALUES(" + i + ", '" + setup + "' , '" + delivery + "')";
 
                 stmt.executeUpdate(query);
+                //jdbcTemplate.update(query);
             }
 
             System.out.println("Inserted successfully");
@@ -161,6 +172,7 @@ public class GettingJokesService {
         catch (Exception ex){
             ex.printStackTrace();
         }
+        ///*
         finally {
             try {
                 stmt.close();
@@ -168,6 +180,8 @@ public class GettingJokesService {
                 throwables.printStackTrace();
             }
         }
+
+        // */
     }
 
     public int nextId(){
@@ -254,11 +268,13 @@ public class GettingJokesService {
 
             //execute query:
             stmt.executeUpdate(query);
+            //jdbcTemplate.execute(query);
             System.out.println("Deleted tuples from table");
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
+       // /*
         finally {
             try {
                 connection.close();
@@ -266,6 +282,7 @@ public class GettingJokesService {
                 throwables.printStackTrace();
             }
         }
+        // */
     }
 
     public String findJoke(int id, String type) {

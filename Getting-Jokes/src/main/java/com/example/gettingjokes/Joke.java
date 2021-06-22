@@ -31,45 +31,4 @@ public class Joke {
         return delivery;
     }
 
-    /*
-    public String findJoke(int id, String type) {
-        AllJokes tmp = new AllJokes();
-        Connection c = tmp.connectDB();
-        Statement stmt;
-        String ret = null;
-        try{
-            String query;
-            if(type.equals("setup")){
-                query = "SELECT setup FROM jokes WHERE id = " + id;
-            }
-            else{
-                query = "SELECT delivery FROM jokes WHERE id = " + id;
-            }
-
-            stmt = c.createStatement();
-
-            //execute query
-            ResultSet selectedJoke = stmt.executeQuery(query);
-            if(selectedJoke.next()){
-                if(type.equals("setup")){
-                    ret = selectedJoke.getString("setup");
-                }
-                else{
-                    ret = selectedJoke.getString("delivery");
-                }
-            }
-            stmt.close();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        try {
-            c.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return ret;
-    }
-     */
-
 }
