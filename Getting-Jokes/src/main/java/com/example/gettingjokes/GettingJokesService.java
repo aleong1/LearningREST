@@ -23,10 +23,6 @@ public class GettingJokesService {
 
     public GettingJokesService(){}
 
-    public GettingJokesService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     public void load() {
         String line;
         StringBuffer responseBack = new StringBuffer();
