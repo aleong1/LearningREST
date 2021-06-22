@@ -21,6 +21,11 @@ public class GettingJokesService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     public GettingJokesService(){}
 
     public void load() {
@@ -52,8 +57,8 @@ public class GettingJokesService {
                 }
 
                 //make connection to postgreSQL
-                //Connection c = connectDB();
-                Connection c = null;
+                Connection c = connectDB();
+                //Connection c = null;
                 makeTable(c);
                 try {
                     insertToTable(c, responseBack.toString());
@@ -68,11 +73,11 @@ public class GettingJokesService {
         catch(IOException ex) {
             ex.printStackTrace();
         }
-        /*
+       // /*
         finally {
             connect.disconnect();
         }
-         */
+        // */
     }
 
     //connecting to postgreSQL
@@ -102,31 +107,34 @@ public class GettingJokesService {
         return connection;
     }
 
+    /*
+    //with jdbc
     public void makeTable(Connection connection){
-        //Statement stmt = null;
+        //making a table in the DB
+        String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
 
-        //try {
+        jdbcTemplate.execute(query);  //null pointer exception
+        System.out.println("Made table");
+    }
+    */
+
+    ///* without jdbc
+    public void makeTable(Connection connection){
+        Statement stmt = null;
+
+        try {
             //making a table in the DB
             String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
-            /*
-            stmt = connection.createStatement();
 
+            stmt = connection.createStatement();
             //execute query:
             stmt.executeUpdate(query);
 
-             */
-
-            jdbcTemplate.execute(query);  //null pointer exception
-
             System.out.println("Made table");
-            /*
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
-
-             */
-/*
         finally {
             try {
                 stmt.close();
@@ -134,9 +142,8 @@ public class GettingJokesService {
                 throwables.printStackTrace();
             }
         }
-
- */
     }
+    //*/
 
     //inserting Jokes into DB table
     public void insertToTable(Connection connection, String data) throws JSONException {
