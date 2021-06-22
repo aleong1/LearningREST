@@ -4,8 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -219,15 +219,33 @@ public class GettingJokesService {
         System.out.println("Deleted tuples from table");
     }
 
+    //with jdbc
+    public Joke findJoke(int id) {
+        String query = "SELECT * FROM jokes WHERE id = " + id;
+        Joke joke = this.jdbcTemplate.queryForObject(
+                query,
+                new RowMapper<Joke>() {
+                    public Joke mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        Joke joke = new Joke(id);
+                        joke.setSetup(rs.getString("setup"));
+                        joke.setDelivery(rs.getString("delivery"));
+                        return joke;
+                    }
+                }, new Object[]{id});
+
+        return joke;
+    }
+
+    //without jdbc
+    /*
     public String findJoke(int id, String type) {
-        /*
         GettingJokesService tmp = new GettingJokesService();
         Connection c = tmp.connectDB();
         Statement stmt;
-        */
+
 
         String ret = null;
-        //try{
+        try{
             String query;
             if(type.equals("setup")){
                 query = "SELECT setup FROM jokes WHERE id = " + id;
@@ -236,15 +254,10 @@ public class GettingJokesService {
                 query = "SELECT delivery FROM jokes WHERE id = " + id;
             }
 
-            ret = jdbcTemplate.queryForObject(query, String.class, new Object[]{id});
-
-            System.out.println("Ret: " + ret);
-                    //queryForObject(query, new Object[] { id }, String.class);
-
-            //stmt = c.createStatement();
+            stmt = c.createStatement();
 
             //execute query
-        /*
+
             ResultSet selectedJoke = stmt.executeQuery(query);
             if(selectedJoke.next()){
                 if(type.equals("setup")){
@@ -255,8 +268,6 @@ public class GettingJokesService {
                 }
             }
             stmt.close();
-
-
         }
         catch (Exception e){
             e.printStackTrace();
@@ -267,8 +278,9 @@ public class GettingJokesService {
             throwables.printStackTrace();
         }
 
-         */
         return ret;
     }
+
+     */
 
 }

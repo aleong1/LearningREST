@@ -10,17 +10,15 @@ import java.util.List;
 @Controller
 public class GettingJokesController {
 
-
     @Autowired
     private GettingJokesService serv;
-    private Joke j;
 
     //Select Joke based off its id in the database
     @GetMapping("/select-joke")
     @ResponseBody
     public Joke getJoke(@RequestParam(required = true, defaultValue = "0") Integer id){
-        Joke j = new Joke(id);  //this way it outputs a JSON?
-        return j;
+        //Joke j = new Joke(id);  //this way it outputs a JSON?
+        return serv.findJoke(id);
     }
 
     @GetMapping("/list-jokes")
@@ -51,8 +49,6 @@ public class GettingJokesController {
     @DeleteMapping("/delete-joke")
     @ResponseBody
     public String deleteJoke(@RequestParam(required = true) Integer id){
-        //GettingJokesService db = new GettingJokesService();
-        //db.deleteJoke(id);
         serv.deleteJoke(id);
         return "Deleted joke with id " + id;
     }
@@ -60,8 +56,6 @@ public class GettingJokesController {
     @DeleteMapping("/delete-all-jokes")
     @ResponseBody
     public String deleteAllJokes(){
-        //GettingJokesService db = new GettingJokesService();
-        //db.deleteTuplesFromTable();
         serv.deleteTuplesFromTable();
         return "Deleted all jokes";
     }
