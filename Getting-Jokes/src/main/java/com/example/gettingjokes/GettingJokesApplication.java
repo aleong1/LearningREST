@@ -8,11 +8,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @SpringBootApplication
 public class GettingJokesApplication {
 
+    /*
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private static JdbcTemplate jdbcTemplate;
+    @Autowired
+    private static GettingJokesService all = new GettingJokesService(jdbcTemplate);
+    */
 
     public static void main(String[] args) {
 
+        //GettingJokesService all = new GettingJokesService(jdbcTemplate);
         GettingJokesService all = new GettingJokesService();
         all.deleteTuplesFromTable();  //delete tuples at beginning so there are no repeated ids when inserting
         all.load();

@@ -18,16 +18,12 @@ import java.sql.*;
 @Service
 public class GettingJokesService {
 
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public GettingJokesService(){};
 
     public GettingJokesService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Autowired
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -111,9 +107,9 @@ public class GettingJokesService {
     }
 
     public void makeTable(Connection connection){
-        Statement stmt = null;
+        //Statement stmt = null;
 
-        try {
+        //try {
             //making a table in the DB
             String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
             /*
@@ -124,13 +120,13 @@ public class GettingJokesService {
 
              */
 
-            this.jdbcTemplate.execute(query);  //null pointer exception
+            jdbcTemplate.execute(query);  //null pointer exception
 
             System.out.println("Made table");
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
+        //}
+        //catch (Exception ex){
+        //    ex.printStackTrace();
+        //}
 /*
         finally {
             try {
