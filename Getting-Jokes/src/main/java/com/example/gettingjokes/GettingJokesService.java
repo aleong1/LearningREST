@@ -5,14 +5,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
 import java.util.List;
@@ -23,7 +21,7 @@ public class GettingJokesService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public GettingJokesService(){}
+    //public GettingJokesService(){} //don't need since it's being autowired?
 
     public void load() {
         String line;
@@ -40,21 +38,20 @@ public class GettingJokesService {
 
             connect = (HttpURLConnection) url.openConnection();  //try with resources only works with AutoCloseable functions
 
-            //Setting up for requests
+            //Setting up for requests to get Jokes from URL
             connect.setRequestMethod("GET");
 
-            //Getting a response:
-            int response = connect.getResponseCode();
+            //Getting a response to make sure connection is ok:
+            //connect.getResponseCode();
 
-            //try with resources:
-            try (BufferedReader read = new BufferedReader(new InputStreamReader(connect.getInputStream()))) {  //reads the json response
+            //read JSON response:
+            try (BufferedReader read = new BufferedReader(new InputStreamReader(connect.getInputStream()))) {  //try with resources
                 line = read.readLine();
                 while (line != null) {
                     responseBack.append(line);
                     line = read.readLine();
                 }
-
-                //Make and insert Jokes
+                //Make and insert Jokes to table
                 makeTable();
                 try {
                     insertToTable(responseBack.toString());
@@ -83,9 +80,8 @@ public class GettingJokesService {
 
         for (int i = 0; i < listOfJokes.length(); i++) {
             JSONObject joke = listOfJokes.getJSONObject(i);
-
-            String setup = joke.getString("setup").replace("'", "''");  //replaces ' with '' to follow SQL rules with apostrophes
-            String delivery = joke.getString("delivery").replace("'", "''");
+            String setup = joke.getString("setup");
+            String delivery = joke.getString("delivery");
             String query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";  //PreparedStatement
             jdbcTemplate.update(query, i, setup, delivery);
         }
@@ -140,7 +136,7 @@ public class GettingJokesService {
 
     //lists all the jokes in the table
     public List<Joke> findAllJokes(){
-        String query = "SELECT * FROM jokes";
+        String query = "SELECT * FROM jokes ORDER BY id";
         return jdbcTemplate.query(
                 query,
                 (rs, rowNum) ->

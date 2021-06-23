@@ -1,7 +1,5 @@
 package com.example.gettingjokes;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 public class Joke {
 
     private int id;
