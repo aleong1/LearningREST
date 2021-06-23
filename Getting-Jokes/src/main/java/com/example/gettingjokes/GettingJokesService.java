@@ -54,11 +54,11 @@ public class GettingJokesService {
                 }
 
                 //make connection to postgreSQL
-                Connection c = connectDB();
+                //Connection c = connectDB();
                 //Connection c = null;
                 makeTable();
                 try {
-                    insertToTable(c, responseBack.toString());
+                    insertToTable(responseBack.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -111,7 +111,28 @@ public class GettingJokesService {
         System.out.println("Made table");
     }
 
+    public void insertToTable(String data) throws JSONException {
+        JSONObject jokes = new JSONObject(data);
+        JSONArray listOfJokes = jokes.getJSONArray("jokes");
+
+        for (int i = 0; i < listOfJokes.length(); i++) {
+            JSONObject joke = listOfJokes.getJSONObject(i);
+            String query;
+
+            String setup = joke.getString("setup").replace("'", "''");  //replaces ' with '' to follow SQL rules
+            String delivery = joke.getString("delivery").replace("'", "''");
+            //setup = setup.replace("'", "''");
+            //delivery = delivery.replace("'", "''");
+            query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";
+            jdbcTemplate.update(query, i, setup, delivery);
+        }
+
+        System.out.println("Inserted successfully");
+
+    }
+
     //inserting Jokes into DB table
+    /*
     public void insertToTable(Connection connection, String data) throws JSONException {
         JSONObject jokes = new JSONObject(data);
         JSONArray listOfJokes = jokes.getJSONArray("jokes");
@@ -139,7 +160,7 @@ public class GettingJokesService {
         catch (Exception ex){
             ex.printStackTrace();
         }
-        ///*
+
         finally {
             try {
                 stmt.close();
@@ -148,14 +169,22 @@ public class GettingJokesService {
             }
         }
 
-        // */
     }
+    */
 
     //gets the next available id in the table
     public int nextId(){
+        if (countJokes() == 0){
+            return 0;
+        }
         String query = "SELECT max(id) as maxInt FROM jokes";
         int id = jdbcTemplate.queryForObject(query, Integer.class);
         return id + 1;
+    }
+
+    public int countJokes(){
+        String query = "SELECT count(*) FROM jokes";
+        return jdbcTemplate.queryForObject(query, Integer.class);
     }
 
     //add a joke to the table
