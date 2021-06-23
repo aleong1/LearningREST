@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
+import java.util.List;
 
 @Service
 public class GettingJokesService {
@@ -76,7 +77,7 @@ public class GettingJokesService {
         // */
     }
 
-    //connecting to postgreSQL
+    //connecting to postgreSQL  -- won't need with jdbcTemplate
     public Connection connectDB(){
         Connection connection = null;
 
@@ -103,14 +104,12 @@ public class GettingJokesService {
         return connection;
     }
 
-    //with jdbc
+    //making a table in the DB
     public void makeTable(){
-        //making a table in the DB
         String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
         jdbcTemplate.execute(query);  //null pointer exception
         System.out.println("Made table");
     }
-
 
     //inserting Jokes into DB table
     public void insertToTable(Connection connection, String data) throws JSONException {
@@ -152,56 +151,18 @@ public class GettingJokesService {
         // */
     }
 
+    //gets the next available id in the table
     public int nextId(){
-        Connection connection = connectDB();
-        Statement stmt = null;
-        int id = 0;
-        try {
-            //deleting all tuples from a table in the DB
-            String query = "SELECT max(id) as maxInt FROM jokes";
-            stmt = connection.createStatement();
-
-            //execute query:
-            ResultSet res = stmt.executeQuery(query);
-            if(res.next()){
-                id = res.getInt("maxInt");
-                id++;
-            }
-            stmt.close();
-            return id;
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-        finally {
-            try {
-                connection.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
-        return id;
+        String query = "SELECT max(id) as maxInt FROM jokes";
+        int id = jdbcTemplate.queryForObject(query, Integer.class);
+        return id + 1;
     }
 
+    //add a joke to the table
     public void addJoke(Joke joke){
-        Connection connection = connectDB();
-        Statement stmt = null;
-        try{
-            String query = "INSERT INTO jokes(id, setup, delivery) VALUES(" + nextId() + ", '" + joke.getSetup() + "', '" + joke.getDelivery() + "')";
-            stmt = connection.createStatement();
-            System.out.println("Query: " + query);
-            stmt.executeUpdate(query);
-            System.out.println("Added Joke");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                connection.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
+        String query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";  //Prepared statement with jdbcTemplate
+        jdbcTemplate.update(query, nextId(), joke.getSetup(), joke.getDelivery());
+        System.out.println("Added Joke");
     }
 
     //delete Joke by id
@@ -211,17 +172,16 @@ public class GettingJokesService {
         System.out.println("Deleted Joke");
     }
 
-    //this deletes all tuples with jdbc
+    //this deletes all tuples
     public void deleteTuplesFromTable(){
-        //deleting all tuples from a table in the DB
         String query = "DELETE FROM jokes";
         jdbcTemplate.execute(query);
         System.out.println("Deleted tuples from table");
     }
 
-    //with jdbc
+    //finds joke setup and delivery based off id
     public Joke findJoke(int id) {
-        String query = "SELECT id, setup, delivery FROM jokes WHERE id = ?";
+        String query = "SELECT * FROM jokes WHERE id = ?";
         return jdbcTemplate.queryForObject(query, (rs, rowNum) ->
                 new Joke(
                         rs.getInt("id"),
@@ -229,5 +189,20 @@ public class GettingJokesService {
                         rs.getString("delivery")
                 ), new Object[]{id});
     }
+
+    //lists all the jokes in the table
+    public List<Joke> findAllJokes(){
+        String query = "SELECT * FROM jokes";
+        return jdbcTemplate.query(
+                query,
+                (rs, rowNum) ->
+                        new Joke(
+                                rs.getInt("id"),
+                                rs.getString("setup"),
+                                rs.getString("delivery")
+                        )
+        );
+    }
+
 
 }

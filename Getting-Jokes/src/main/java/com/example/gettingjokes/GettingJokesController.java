@@ -23,25 +23,13 @@ public class GettingJokesController {
     @GetMapping("/list-jokes")
     @ResponseBody
     public List<Joke> listJokes(){
-        List<Joke> allJokes = new ArrayList<Joke>();
-        GettingJokesService j = new GettingJokesService();
-        int size = j.nextId();
-        //int size = serv.nextId();
-        for(int i = 0; i < size; i++){
-            Joke tmp = new Joke(i);
-            if(tmp.getSetup() != null){
-                allJokes.add(new Joke(i));
-            }
-        }
-        return allJokes;
+        return serv.findAllJokes();
     }
 
     @PostMapping("/add-joke")
     @ResponseBody
     public String insertJoke(@RequestBody Joke joke){
-        GettingJokesService db = new GettingJokesService();
-        db.addJoke(joke);
-        //serv.addJoke(joke);
+        serv.addJoke(joke);
         return "Added joke";
     }
 

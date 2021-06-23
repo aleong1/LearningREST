@@ -8,10 +8,6 @@ public class Joke {
     private String setup;
     private String delivery;
 
-    public Joke(int id){
-        this.id = id;
-    }
-
     public Joke(int id, String setup, String delivery){
         this.delivery = delivery;
         this.setup = setup;
@@ -28,17 +24,5 @@ public class Joke {
 
     public String getDelivery() {
         return delivery;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setSetup(String setup) {
-        this.setup = setup;
-    }
-
-    public void setDelivery(String delivery) {
-        this.delivery = delivery;
     }
 }
