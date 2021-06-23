@@ -28,7 +28,7 @@ public class GettingJokesService {
     public void load() {
         String line;
         StringBuffer responseBack = new StringBuffer();
-        //defining connection
+        //defining connection to URL
         HttpURLConnection connect = null;
 
         try {
@@ -44,8 +44,9 @@ public class GettingJokesService {
             connect.setRequestMethod("GET");
 
             //Getting a response:
-            int response = connect.getResponseCode();  //response will be 200 on success
+            int response = connect.getResponseCode();
 
+            //try with resources:
             try (BufferedReader read = new BufferedReader(new InputStreamReader(connect.getInputStream()))) {  //reads the json response
                 line = read.readLine();
                 while (line != null) {
@@ -53,131 +54,48 @@ public class GettingJokesService {
                     line = read.readLine();
                 }
 
-                //make connection to postgreSQL
-                //Connection c = connectDB();
-                //Connection c = null;
+                //Make and insert Jokes
                 makeTable();
                 try {
                     insertToTable(responseBack.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            } //end of try with resources
-        }
-        catch(MalformedURLException ex){
+            }
+        } catch(IOException ex){
             ex.printStackTrace();
-        }
-        catch(IOException ex) {
-            ex.printStackTrace();
-        }
-       // /*
-        finally {
+        } finally {
             connect.disconnect();
         }
-        // */
-    }
-
-    //connecting to postgreSQL  -- won't need with jdbcTemplate
-    public Connection connectDB(){
-        Connection connection = null;
-
-        try{
-            //Register driver class: postgreSQL
-            Class.forName("org.postgresql.Driver");
-
-            //establishing a connection
-            String user = "aleong";
-            String pass = "aleong";
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", user, pass);
-
-            //Testing connection:
-            if (connection != null){
-                System.out.println("Successfully connected to database");
-            }
-            else{
-                System.out.println("Failed to connect");
-            }
-        }
-        catch (Exception ex){
-            System.out.print(ex);
-        }
-        return connection;
     }
 
     //making a table in the DB
     public void makeTable(){
         String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
-        jdbcTemplate.execute(query);  //null pointer exception
-        System.out.println("Made table");
+        jdbcTemplate.execute(query);
+        System.out.println("Made Jokes table");
     }
 
+    //inserting Jokes into DB table
     public void insertToTable(String data) throws JSONException {
         JSONObject jokes = new JSONObject(data);
         JSONArray listOfJokes = jokes.getJSONArray("jokes");
 
         for (int i = 0; i < listOfJokes.length(); i++) {
             JSONObject joke = listOfJokes.getJSONObject(i);
-            String query;
 
-            String setup = joke.getString("setup").replace("'", "''");  //replaces ' with '' to follow SQL rules
+            String setup = joke.getString("setup").replace("'", "''");  //replaces ' with '' to follow SQL rules with apostrophes
             String delivery = joke.getString("delivery").replace("'", "''");
-            //setup = setup.replace("'", "''");
-            //delivery = delivery.replace("'", "''");
-            query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";
+            String query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";  //PreparedStatement
             jdbcTemplate.update(query, i, setup, delivery);
         }
-
-        System.out.println("Inserted successfully");
-
+        System.out.println("Inserted tuples into table successfully");
     }
-
-    //inserting Jokes into DB table
-    /*
-    public void insertToTable(Connection connection, String data) throws JSONException {
-        JSONObject jokes = new JSONObject(data);
-        JSONArray listOfJokes = jokes.getJSONArray("jokes");
-        Statement stmt = null;
-        try {
-            stmt = connection.createStatement();
-
-            for (int i = 0; i < listOfJokes.length(); i++) {
-                JSONObject joke = listOfJokes.getJSONObject(i);
-                //String category = joke.getString("category");
-                String query;
-
-                String setup = joke.getString("setup");
-                String delivery = joke.getString("delivery");
-                setup = setup.replace("'", "''");
-                delivery = delivery.replace("'", "''");
-                query = "INSERT INTO jokes(id, setup, delivery) VALUES(" + i + ", '" + setup + "' , '" + delivery + "')";
-
-                stmt.executeUpdate(query);
-                //jdbcTemplate.update(query);  //null pointer exception
-            }
-
-            System.out.println("Inserted successfully");
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-
-        finally {
-            try {
-                stmt.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
-
-    }
-    */
 
     //gets the next available id in the table
     public int nextId(){
-        if (countJokes() == 0){
-            return 0;
-        }
-        String query = "SELECT max(id) as maxInt FROM jokes";
+        if (countJokes() == 0){ return 0; }
+        String query = "SELECT max(id) FROM jokes";
         int id = jdbcTemplate.queryForObject(query, Integer.class);
         return id + 1;
     }
@@ -190,22 +108,23 @@ public class GettingJokesService {
     //add a joke to the table
     public void addJoke(Joke joke){
         String query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";  //Prepared statement with jdbcTemplate
-        jdbcTemplate.update(query, nextId(), joke.getSetup(), joke.getDelivery());
-        System.out.println("Added Joke");
+        int id = nextId();
+        jdbcTemplate.update(query, id, joke.getSetup(), joke.getDelivery());
+        System.out.println("Added Joke with id " + id);
     }
 
     //delete Joke by id
     public void deleteJoke(int id){
         String query = "DELETE FROM jokes WHERE id = " + id;
         jdbcTemplate.execute(query);
-        System.out.println("Deleted Joke");
+        System.out.println("Deleted Joke with id " + id);
     }
 
     //this deletes all tuples
     public void deleteTuplesFromTable(){
         String query = "DELETE FROM jokes";
         jdbcTemplate.execute(query);
-        System.out.println("Deleted tuples from table");
+        System.out.println("Deleted all tuples from table");
     }
 
     //finds joke setup and delivery based off id
@@ -233,5 +152,31 @@ public class GettingJokesService {
         );
     }
 
+    //connecting to postgreSQL  -- won't need with jdbcTemplate -- Is never used
+    public Connection connectDB(){
+        Connection connection = null;
+
+        try{
+            //Register driver class: postgreSQL
+            Class.forName("org.postgresql.Driver");
+
+            //establishing a connection
+            String user = "aleong";
+            String pass = "aleong";
+            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", user, pass);
+
+            //Testing connection:
+            if (connection != null){
+                System.out.println("Successfully connected to database");
+            }
+            else{
+                System.out.println("Failed to connect");
+            }
+        }
+        catch (Exception ex){
+            System.out.print(ex);
+        }
+        return connection;
+    }
 
 }
