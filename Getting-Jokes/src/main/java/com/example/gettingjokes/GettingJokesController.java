@@ -12,7 +12,6 @@ public class GettingJokesController {
     @Autowired
     private GettingJokesService serv;
 
-    //Select Joke based off its id in the database
     @GetMapping("/select-joke")
     @ResponseBody
     public Joke getJoke(@RequestParam(required = true, defaultValue = "0") Integer id){

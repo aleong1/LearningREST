@@ -12,7 +12,7 @@ public class GettingJokesApplication implements CommandLineRunner {
         SpringApplication.run(GettingJokesApplication.class, args);
     }
 
-    @Autowired
+    @Autowired   //this got rid of null pointer exception
     private GettingJokesService all;
 
     @Override
