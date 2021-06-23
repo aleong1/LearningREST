@@ -9,22 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @SpringBootApplication
 public class GettingJokesApplication implements CommandLineRunner {
 
-    /*
-    @Autowired
-    private static JdbcTemplate jdbcTemplate;
-    */
-    //@Autowired
-    //private static GettingJokesService all = new GettingJokesService();
-
     public static void main(String[] args) {
         SpringApplication.run(GettingJokesApplication.class, args);
-        /*
-        GettingJokesService all = new GettingJokesService(jdbcTemplate);
-        GettingJokesService all = new GettingJokesService();
-        all.deleteTuplesFromTable();  //delete tuples at beginning so there are no repeated ids when inserting
-        all.load();
-         */
-
     }
 
     @Autowired
@@ -32,7 +18,6 @@ public class GettingJokesApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //GettingJokesService all = new GettingJokesService();
         all.deleteTuplesFromTable();  //delete tuples at beginning so there are no repeated ids when inserting
         all.load();
     }

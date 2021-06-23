@@ -8,14 +8,8 @@ public class Joke {
     private String setup;
     private String delivery;
 
-    @Autowired
-    private GettingJokesService tmp;
-
     public Joke(int id){
         this.id = id;
-        //GettingJokesService tmp = new GettingJokesService();
-        //this.delivery = tmp.findJoke(id, "delivery");
-        //this.setup = tmp.findJoke(id, "setup");
     }
 
     public Joke(int id, String setup, String delivery){

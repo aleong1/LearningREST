@@ -221,66 +221,13 @@ public class GettingJokesService {
 
     //with jdbc
     public Joke findJoke(int id) {
-        String query = "SELECT * FROM jokes WHERE id = " + id;
-        Joke joke = this.jdbcTemplate.queryForObject(
-                query,
-                new RowMapper<Joke>() {
-                    public Joke mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        Joke joke = new Joke(id);
-                        joke.setSetup(rs.getString("setup"));
-                        joke.setDelivery(rs.getString("delivery"));
-                        return joke;
-                    }
-                }, new Object[]{id});
-
-        return joke;
+        String query = "SELECT id, setup, delivery FROM jokes WHERE id = ?";
+        return jdbcTemplate.queryForObject(query, (rs, rowNum) ->
+                new Joke(
+                        rs.getInt("id"),
+                        rs.getString("setup"),
+                        rs.getString("delivery")
+                ), new Object[]{id});
     }
-
-    //without jdbc
-    /*
-    public String findJoke(int id, String type) {
-        GettingJokesService tmp = new GettingJokesService();
-        Connection c = tmp.connectDB();
-        Statement stmt;
-
-
-        String ret = null;
-        try{
-            String query;
-            if(type.equals("setup")){
-                query = "SELECT setup FROM jokes WHERE id = " + id;
-            }
-            else{
-                query = "SELECT delivery FROM jokes WHERE id = " + id;
-            }
-
-            stmt = c.createStatement();
-
-            //execute query
-
-            ResultSet selectedJoke = stmt.executeQuery(query);
-            if(selectedJoke.next()){
-                if(type.equals("setup")){
-                    ret = selectedJoke.getString("setup");
-                }
-                else{
-                    ret = selectedJoke.getString("delivery");
-                }
-            }
-            stmt.close();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        try {
-            c.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
-        return ret;
-    }
-
-     */
 
 }
