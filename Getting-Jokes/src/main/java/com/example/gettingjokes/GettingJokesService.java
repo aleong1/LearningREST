@@ -20,7 +20,6 @@ public class GettingJokesService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
     //public GettingJokesService(){} //don't need since it's being autowired?
 
     public void load() {
