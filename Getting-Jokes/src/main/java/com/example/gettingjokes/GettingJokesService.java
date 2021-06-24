@@ -20,7 +20,6 @@ public class GettingJokesService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    //public GettingJokesService(){} //don't need since it's being autowired?
 
     public void load() {
         String line;
@@ -39,9 +38,6 @@ public class GettingJokesService {
 
             //Setting up for requests to get Jokes from URL
             connect.setRequestMethod("GET");
-
-            //Getting a response to make sure connection is ok:
-            //connect.getResponseCode();
 
             //read JSON response:
             try (BufferedReader read = new BufferedReader(new InputStreamReader(connect.getInputStream()))) {  //try with resources
@@ -76,7 +72,6 @@ public class GettingJokesService {
     public void insertToTable(String data) throws JSONException {
         JSONObject jokes = new JSONObject(data);
         JSONArray listOfJokes = jokes.getJSONArray("jokes");
-
         for (int i = 0; i < listOfJokes.length(); i++) {
             JSONObject joke = listOfJokes.getJSONObject(i);
             String setup = joke.getString("setup");
