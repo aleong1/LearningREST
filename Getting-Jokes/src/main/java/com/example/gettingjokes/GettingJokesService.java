@@ -74,7 +74,7 @@ public class GettingJokesService {
         JSONArray listOfJokes = jokes.getJSONArray("jokes");
         for (int i = 0; i < listOfJokes.length(); i++) {
             JSONObject joke = listOfJokes.getJSONObject(i);
-            String setup = joke.getString("setup");
+            String setup = joke.getString("setup"); //PreparedStatement does not need to watch out for ' in sql
             String delivery = joke.getString("delivery");
             String query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";  //PreparedStatement
             jdbcTemplate.update(query, i, setup, delivery);
