@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,12 +15,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.*;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GettingJokesService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private GettingJokesRepository repository;
 
     public void load() {
         String line;
@@ -117,6 +122,12 @@ public class GettingJokesService {
         System.out.println("Deleted all tuples from table");
     }
 
+    public Joke findJoke(int id){
+        Optional<Joke> ret = repository.findById(id);
+        return ret.get();
+    }
+
+    /*
     //finds joke setup and delivery based off id
     public Joke findJoke(int id) {
         String query = "SELECT * FROM jokes WHERE id = ?";
@@ -127,6 +138,8 @@ public class GettingJokesService {
                         rs.getString("delivery")
                 ), new Object[]{id});
     }
+
+     */
 
     //lists all the jokes in the table
     public List<Joke> findAllJokes(){
