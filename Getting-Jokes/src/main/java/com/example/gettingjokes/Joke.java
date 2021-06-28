@@ -8,7 +8,6 @@ import javax.persistence.*;
 public class Joke {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
@@ -36,5 +35,9 @@ public class Joke {
 
     public String getDelivery() {
         return delivery;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
