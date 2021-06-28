@@ -27,6 +27,7 @@ public class GettingJokesService {
     private GettingJokesRepository repository;
 
     public void load() {
+        System.out.println("Count: " + repository.count());
         String line;
         StringBuffer responseBack = new StringBuffer();
         //defining connection to URL
@@ -73,6 +74,7 @@ public class GettingJokesService {
         System.out.println("Made Jokes table");
     }
 
+
     //inserting Jokes into DB table
     public void insertToTable(String data) throws JSONException {
         JSONObject jokes = new JSONObject(data);
@@ -87,18 +89,21 @@ public class GettingJokesService {
         System.out.println("Inserted tuples into table successfully");
     }
 
+
     //gets the next available id in the table
     public int nextId(){
-        if (countJokes() == 0){ return 0; }
+        if (repository.count() == 0){ return 0; }
         String query = "SELECT max(id) FROM jokes";
         int id = jdbcTemplate.queryForObject(query, Integer.class);
         return id + 1;
     }
 
+    /*
     public int countJokes(){
         String query = "SELECT count(*) FROM jokes";
         return jdbcTemplate.queryForObject(query, Integer.class);
     }
+     */
 
     //add a joke to the table
     public void addJoke(Joke joke){
@@ -108,6 +113,13 @@ public class GettingJokesService {
         System.out.println("Added Joke with id " + id);
     }
 
+    //-------------------------------------------------------------------
+
+    public void deleteJoke(int id){  //won't delete id 0
+        repository.deleteById(id);
+    }
+
+    /*
     //delete Joke by id
     public void deleteJoke(int id){
         String query = "DELETE FROM jokes WHERE id = " + id;
@@ -115,13 +127,23 @@ public class GettingJokesService {
         System.out.println("Deleted Joke with id " + id);
     }
 
+     */
+
+    public void deleteTuplesFromTable(){
+        //repository.deleteAll(); //won't delete id 0
+        repository.deleteAllInBatch();
+    }
+
+    /*
     //this deletes all tuples
     public void deleteTuplesFromTable(){
         String query = "DELETE FROM jokes";
         jdbcTemplate.execute(query);
         System.out.println("Deleted all tuples from table");
     }
+     */
 
+    //find joke with JPA
     public Joke findJoke(int id){
         Optional<Joke> ret = repository.findById(id);
         return ret.get();
@@ -141,6 +163,12 @@ public class GettingJokesService {
 
      */
 
+    //list all jokes with JPA
+    public List<Joke> findAllJokes(){
+        return repository.findAll();
+    }
+
+    /*
     //lists all the jokes in the table
     public List<Joke> findAllJokes(){
         String query = "SELECT * FROM jokes ORDER BY id";
@@ -154,6 +182,8 @@ public class GettingJokesService {
                         )
         );
     }
+
+ */
 
     //connecting to postgreSQL  -- won't need with jdbcTemplate -- Is never used
     public Connection connectDB(){
