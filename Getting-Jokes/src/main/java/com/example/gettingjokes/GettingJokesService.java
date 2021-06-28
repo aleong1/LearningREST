@@ -74,20 +74,8 @@ public class GettingJokesService {
         System.out.println("Made Jokes table");
     }
 
-    //with JPA
-    public void insertToTable(String data) throws JSONException {
-        JSONObject jokes = new JSONObject(data);
-        JSONArray listOfJokes = jokes.getJSONArray("jokes");
-        for (int i = 0; i < listOfJokes.length() ; i++) {
-            JSONObject joke = listOfJokes.getJSONObject(i);
-            String setup = joke.getString("setup"); //PreparedStatement does not need to watch out for ' in sql
-            String delivery = joke.getString("delivery");
-            repository.save(new Joke(i + 1, setup, delivery));
-        }
-        System.out.println("Inserted tuples into table successfully");
-    }
 
-    /*
+    /* jdbc version
     //inserting Jokes into DB table
     public void insertToTable(String data) throws JSONException {
         JSONObject jokes = new JSONObject(data);
@@ -101,29 +89,7 @@ public class GettingJokesService {
         }
         System.out.println("Inserted tuples into table successfully");
     }
-     */
 
-    //gets the next available id in the table
-    public int nextId(){
-        if (repository.count() == 0){ return 1; }
-        String query = "SELECT max(id) FROM jokes";
-        int id = jdbcTemplate.queryForObject(query, Integer.class);
-        return id + 1;
-    }
-
-    /*
-    public int countJokes(){
-        String query = "SELECT count(*) FROM jokes";
-        return jdbcTemplate.queryForObject(query, Integer.class);
-    }
-     */
-
-    //with JPA
-    public void addJoke(Joke joke){
-        joke.setId(nextId());
-        repository.save(joke);
-    }
-    /*
     //add a joke to the table
     public void addJoke(Joke joke){
         String query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";  //Prepared statement with jdbcTemplate
@@ -131,41 +97,21 @@ public class GettingJokesService {
         jdbcTemplate.update(query, id, joke.getSetup(), joke.getDelivery());
         System.out.println("Added Joke with id " + id);
     }
-     */
 
-    public void deleteJoke(int id){  //won't delete id 0 if it starts with 0 --> changed it to start with 1
-        repository.deleteById(id);
-    }
-
-    /*
     //delete Joke by id
     public void deleteJoke(int id){
         String query = "DELETE FROM jokes WHERE id = " + id;
         jdbcTemplate.execute(query);
         System.out.println("Deleted Joke with id " + id);
     }
-     */
 
-    public void deleteTuplesFromTable(){
-        repository.deleteAll(); //won't delete id 0
-    }
-
-    /*
     //this deletes all tuples
     public void deleteTuplesFromTable(){
         String query = "DELETE FROM jokes";
         jdbcTemplate.execute(query);
         System.out.println("Deleted all tuples from table");
     }
-     */
 
-    //find joke with JPA
-    public Joke findJoke(int id){
-        Optional<Joke> ret = repository.findById(id);
-        return ret.get();
-    }
-
-    /*
     //finds joke setup and delivery based off id
     public Joke findJoke(int id) {
         String query = "SELECT * FROM jokes WHERE id = ?";
@@ -177,14 +123,6 @@ public class GettingJokesService {
                 ), new Object[]{id});
     }
 
-     */
-
-    //list all jokes with JPA
-    public List<Joke> findAllJokes(){
-        return repository.findAll();
-    }
-
-    /*
     //lists all the jokes in the table
     public List<Joke> findAllJokes(){
         String query = "SELECT * FROM jokes ORDER BY id";
@@ -200,6 +138,14 @@ public class GettingJokesService {
     }
 
  */
+
+    //gets the next available id in the table
+    public int nextId(){
+        if (repository.count() == 0){ return 1; }
+        String query = "SELECT max(id) FROM jokes";
+        int id = jdbcTemplate.queryForObject(query, Integer.class);
+        return id + 1;
+    }
 
     //connecting to postgreSQL  -- won't need with jdbcTemplate -- Is never used
     public Connection connectDB(){
@@ -226,6 +172,42 @@ public class GettingJokesService {
             System.out.print(ex);
         }
         return connection;
+    }
+
+    //JPA version of functions:
+
+    public void insertToTable(String data) throws JSONException {
+        JSONObject jokes = new JSONObject(data);
+        JSONArray listOfJokes = jokes.getJSONArray("jokes");
+        for (int i = 0; i < listOfJokes.length() ; i++) {
+            JSONObject joke = listOfJokes.getJSONObject(i);
+            String setup = joke.getString("setup"); //PreparedStatement does not need to watch out for ' in sql
+            String delivery = joke.getString("delivery");
+            repository.save(new Joke(i + 1, setup, delivery));
+        }
+        System.out.println("Inserted tuples into table successfully");
+    }
+
+    public void addJoke(Joke joke){
+        joke.setId(nextId());
+        repository.save(joke);
+    }
+
+    public void deleteJoke(int id){  //won't delete id 0 if it starts with 0 --> changed it to start with 1
+        repository.deleteById(id);
+    }
+
+    public void deleteTuplesFromTable(){
+        repository.deleteAll(); //won't delete id 0 so made first id 1
+    }
+
+    public Joke findJoke(int id){
+        Optional<Joke> ret = repository.findById(id);
+        return ret.get();
+    }
+
+    public List<Joke> findAllJokes(){
+        return repository.findAll();
     }
 
 }
