@@ -75,7 +75,7 @@ public class GettingJokesService {
     }
 
 
-    /* jdbc version
+    // jdbc version
     //inserting Jokes into DB table
     public void insertToTable(String data) throws JSONException {
         JSONObject jokes = new JSONObject(data);
@@ -137,7 +137,6 @@ public class GettingJokesService {
         );
     }
 
- */
 
     //gets the next available id in the table
     public int nextId(){
@@ -174,6 +173,7 @@ public class GettingJokesService {
         return connection;
     }
 
+    /*
     //JPA version of functions:
 
     public void insertToTable(String data) throws JSONException {
@@ -209,5 +209,6 @@ public class GettingJokesService {
     public List<Joke> findAllJokes(){
         return repository.findAll();
     }
+     */
 
 }
