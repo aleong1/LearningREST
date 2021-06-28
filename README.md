@@ -23,7 +23,7 @@ In another terminal to Getting-Jokes dir:
 
 #### To select a joke based off it's id in the database: `curl localhost:8080/select-joke?id=[id num]`
 
-*ID has to be [0,9]*
+*ID has to be [1,10]*
 
 *replace [id num] with the id number of the joke you want to select*
 
