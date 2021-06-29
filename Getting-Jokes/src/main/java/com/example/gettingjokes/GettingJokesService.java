@@ -52,7 +52,7 @@ public class GettingJokesService {
                     responseBack.append(line);
                     line = read.readLine();
                 }
-                //Make and insert Jokes to table
+                //Make and insert Jokes to table  -- is there repository functions for this?
                 makeTable();
                 try {
                     insertToTable(responseBack.toString());
