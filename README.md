@@ -42,3 +42,5 @@ Apparently for Windows you need a `\` before each `"` in the JSON input
 *replace [id num] with the id number of the joke you want to delete*
 
 #### To delete all jokes in the table: `curl -X "DELETE" localhost:8080/delete-all-jokes`
+
+#### To shut down the app: `curl -X POST localhost:8080/actuator/shutdown`
