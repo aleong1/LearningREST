@@ -53,7 +53,7 @@ public class GettingJokesServiceJPA {
                     line = read.readLine();
                 }
                 //Make and insert Jokes to table  -- is there repository functions for this?
-                makeTable();
+                //makeTable();
                 try {
                     insertToTable(responseBack.toString());
                 } catch (JSONException e) {
