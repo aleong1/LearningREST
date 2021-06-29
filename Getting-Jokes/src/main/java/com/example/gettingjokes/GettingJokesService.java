@@ -113,7 +113,7 @@ public class GettingJokesService {
     }
 
     //finds joke setup and delivery based off id
-    public Joke findJoke(int id) {
+    public Joke findJoke(int id) {  //queryForObject() better for selecting 1 object
         String query = "SELECT * FROM jokes WHERE id = ?";
         return jdbcTemplate.queryForObject(query, (rs, rowNum) ->
                 new Joke(
@@ -124,7 +124,7 @@ public class GettingJokesService {
     }
 
     //lists all the jokes in the table
-    public List<Joke> findAllJokes(){
+    public List<Joke> findAllJokes(){  //query() better for lists?
         String query = "SELECT * FROM jokes ORDER BY id";
         return jdbcTemplate.query(
                 query,
