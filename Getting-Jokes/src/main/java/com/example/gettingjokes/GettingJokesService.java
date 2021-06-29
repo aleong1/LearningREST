@@ -137,13 +137,17 @@ public class GettingJokesService {
         );
     }
 
-
     //gets the next available id in the table
     public int nextId(){
         if (repository.count() == 0){ return 1; }
         String query = "SELECT max(id) FROM jokes";
         int id = jdbcTemplate.queryForObject(query, Integer.class);
         return id + 1;
+    }
+
+    public int countJokes(){  //could just be repository.count()
+        String query = "SELECT count(*) FROM jokes";
+        return jdbcTemplate.queryForObject(query, Integer.class);
     }
 
     //connecting to postgreSQL  -- won't need with jdbcTemplate -- Is never used
