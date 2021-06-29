@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class GettingJokesService {
+public class GettingJokesServiceJDBC {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -139,7 +139,7 @@ public class GettingJokesService {
 
     //gets the next available id in the table
     public int nextId(){
-        if (repository.count() == 0){ return 1; }
+        if (countJokes() == 0){ return 1; }
         String query = "SELECT max(id) FROM jokes";
         int id = jdbcTemplate.queryForObject(query, Integer.class);
         return id + 1;
@@ -149,70 +149,5 @@ public class GettingJokesService {
         String query = "SELECT count(*) FROM jokes";
         return jdbcTemplate.queryForObject(query, Integer.class);
     }
-
-    //connecting to postgreSQL  -- won't need with jdbcTemplate -- Is never used
-    public Connection connectDB(){
-        Connection connection = null;
-
-        try{
-            //Register driver class: postgreSQL
-            Class.forName("org.postgresql.Driver");
-
-            //establishing a connection
-            String user = "aleong";
-            String pass = "aleong";
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", user, pass);
-
-            //Testing connection:
-            if (connection != null){
-                System.out.println("Successfully connected to database");
-            }
-            else{
-                System.out.println("Failed to connect");
-            }
-        }
-        catch (Exception ex){
-            System.out.print(ex);
-        }
-        return connection;
-    }
-
-    /*
-    //JPA version of functions:
-
-    public void insertToTable(String data) throws JSONException {
-        JSONObject jokes = new JSONObject(data);
-        JSONArray listOfJokes = jokes.getJSONArray("jokes");
-        for (int i = 0; i < listOfJokes.length() ; i++) {
-            JSONObject joke = listOfJokes.getJSONObject(i);
-            String setup = joke.getString("setup"); //PreparedStatement does not need to watch out for ' in sql
-            String delivery = joke.getString("delivery");
-            repository.save(new Joke(i + 1, setup, delivery));
-        }
-        System.out.println("Inserted tuples into table successfully");
-    }
-
-    public void addJoke(Joke joke){
-        joke.setId(nextId());
-        repository.save(joke);
-    }
-
-    public void deleteJoke(int id){  //won't delete id 0 if it starts with 0 --> changed it to start with 1
-        repository.deleteById(id);
-    }
-
-    public void deleteTuplesFromTable(){
-        repository.deleteAll(); //won't delete id 0 so made first id 1
-    }
-
-    public Joke findJoke(int id){
-        Optional<Joke> ret = repository.findById(id);
-        return ret.get();
-    }
-
-    public List<Joke> findAllJokes(){
-        return repository.findAll();
-    }
-     */
 
 }

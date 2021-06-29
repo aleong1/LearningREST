@@ -10,7 +10,7 @@ import java.util.List;
 public class GettingJokesController {
 
     @Autowired
-    private GettingJokesService serv;
+    private GettingJokesServiceJDBC serv;
 
     @GetMapping("/select-joke")
     @ResponseBody

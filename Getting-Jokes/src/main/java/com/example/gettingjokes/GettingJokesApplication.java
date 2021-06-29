@@ -13,7 +13,7 @@ public class GettingJokesApplication implements CommandLineRunner {
     }
 
     @Autowired   //this got rid of null pointer exception
-    private GettingJokesService all;
+    private GettingJokesServiceJDBC all;
 
     @Override
     public void run(String... args) throws Exception {
