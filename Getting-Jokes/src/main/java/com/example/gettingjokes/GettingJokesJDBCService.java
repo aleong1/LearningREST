@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.*;
 import java.util.List;
 
 @Service
@@ -23,69 +22,6 @@ public class GettingJokesJDBCService {
 
     @Autowired
     private GettingJokesRepository repository;
-
-    public void load() {
-        String line;
-        StringBuffer responseBack = new StringBuffer();
-        //defining connection to URL
-        HttpURLConnection connect = null;
-
-        try {
-            String base = "https://v2.jokeapi.dev/joke/Any?%s";
-            base = String.format(base, "blacklistFlags=nsfw,religious,political,racist,sexist,explicit&%s");
-            base = String.format(base, "type=twopart&%s");
-            base = String.format(base, "amount=10");
-            URL url = new URL(base);
-
-            connect = (HttpURLConnection) url.openConnection();  //try with resources only works with AutoCloseable functions
-
-            //Setting up for requests to get Jokes from URL
-            connect.setRequestMethod("GET");
-
-            //read JSON response:
-            try (BufferedReader read = new BufferedReader(new InputStreamReader(connect.getInputStream()))) {  //try with resources
-                line = read.readLine();
-                while (line != null) {
-                    responseBack.append(line);
-                    line = read.readLine();
-                }
-                //Make and insert Jokes to table  -- is there repository functions for this?
-                makeTable();
-                try {
-                    insertToTable(responseBack.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch(IOException ex){
-            ex.printStackTrace();
-        } finally {
-            connect.disconnect();
-        }
-    }
-
-    //making a table in the DB
-    public void makeTable(){
-        String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
-        jdbcTemplate.execute(query);
-        System.out.println("Made Jokes table");
-    }
-
-
-    // jdbc version
-    //inserting Jokes into DB table
-    public void insertToTable(String data) throws JSONException {
-        JSONObject jokes = new JSONObject(data);
-        JSONArray listOfJokes = jokes.getJSONArray("jokes");
-        for (int i = 0; i < listOfJokes.length(); i++) {
-            JSONObject joke = listOfJokes.getJSONObject(i);
-            String setup = joke.getString("setup"); //PreparedStatement does not need to watch out for ' in sql
-            String delivery = joke.getString("delivery");
-            String query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";  //PreparedStatement
-            jdbcTemplate.update(query, i + 1, setup, delivery);
-        }
-        System.out.println("Inserted tuples into table successfully");
-    }
 
     //add a joke to the table
     public void addJoke(Joke joke){
@@ -146,5 +82,68 @@ public class GettingJokesJDBCService {
         String query = "SELECT count(*) FROM jokes";
         return jdbcTemplate.queryForObject(query, Integer.class);
     }
+
+    /* -- don't need anymore
+    public void load() {
+        String line;
+        StringBuffer responseBack = new StringBuffer();
+        //defining connection to URL
+        HttpURLConnection connect = null;
+
+        try {
+            String base = "https://v2.jokeapi.dev/joke/Any?%s";
+            base = String.format(base, "blacklistFlags=nsfw,religious,political,racist,sexist,explicit&%s");
+            base = String.format(base, "type=twopart&%s");
+            base = String.format(base, "amount=10");
+            URL url = new URL(base);
+
+            connect = (HttpURLConnection) url.openConnection();  //try with resources only works with AutoCloseable functions
+
+            //Setting up for requests to get Jokes from URL
+            connect.setRequestMethod("GET");
+
+            //read JSON response:
+            try (BufferedReader read = new BufferedReader(new InputStreamReader(connect.getInputStream()))) {  //try with resources
+                line = read.readLine();
+                while (line != null) {
+                    responseBack.append(line);
+                    line = read.readLine();
+                }
+                //Make and insert Jokes to table  -- is there repository functions for this?
+                makeTable();
+                try {
+                    insertToTable(responseBack.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch(IOException ex){
+            ex.printStackTrace();
+        } finally {
+            connect.disconnect();
+        }
+    }
+
+    //making a table in the DB
+    public void makeTable(){
+        String query = "CREATE TABLE IF NOT EXISTS jokes(id int primary key, setup varchar, delivery varchar)";
+        jdbcTemplate.execute(query);
+        System.out.println("Made Jokes table");
+    }
+
+    //inserting Jokes into DB table
+    public void insertToTable(String data) throws JSONException {
+        JSONObject jokes = new JSONObject(data);
+        JSONArray listOfJokes = jokes.getJSONArray("jokes");
+        for (int i = 0; i < listOfJokes.length(); i++) {
+            JSONObject joke = listOfJokes.getJSONObject(i);
+            String setup = joke.getString("setup"); //PreparedStatement does not need to watch out for ' in sql
+            String delivery = joke.getString("delivery");
+            String query = "INSERT INTO jokes(id, setup, delivery) VALUES(?, ?, ?)";  //PreparedStatement
+            jdbcTemplate.update(query, i + 1, setup, delivery);
+        }
+        System.out.println("Inserted tuples into table successfully");
+    }
+     */
 
 }
