@@ -10,7 +10,7 @@ import java.util.List;
 public class GettingJokesController {
 
     @Autowired
-    private GettingJokesServiceJPA serv;
+    private GettingJokesJPAService serv;
 
     @GetMapping("/select-joke")
     @ResponseBody
@@ -21,6 +21,7 @@ public class GettingJokesController {
     @GetMapping("/list-jokes")
     @ResponseBody
     public List<Joke> listJokes(){
+        System.out.println("here");
         return serv.findAllJokes();
     }
 
