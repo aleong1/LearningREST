@@ -21,7 +21,6 @@ public class GettingJokesController {
     @GetMapping("/list-jokes")
     @ResponseBody
     public List<Joke> listJokes(){
-        System.out.println("here");
         return serv.findAllJokes();
     }
 

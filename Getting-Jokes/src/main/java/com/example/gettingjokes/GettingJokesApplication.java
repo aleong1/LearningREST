@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GettingJokesApplication implements CommandLineRunner {
+public class GettingJokesApplication{//} implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(GettingJokesApplication.class, args);
@@ -15,10 +15,14 @@ public class GettingJokesApplication implements CommandLineRunner {
     @Autowired   //this got rid of null pointer exception
     private GettingJokesJPAService all;
 
+    /*
+
     @Override
     public void run(String... args) throws Exception {
         all.deleteTuplesFromTable();  //delete tuples at beginning so there are no repeated ids when inserting
-        all.load();
+        //all.load();
     }
+
+     */
 
 }
