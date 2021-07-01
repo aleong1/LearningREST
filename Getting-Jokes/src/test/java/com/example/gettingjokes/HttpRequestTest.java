@@ -61,6 +61,7 @@ public class HttpRequestTest {
         assert (selected.getId() == 1);
         assert (selected.getSetup().equals("What is a dying programmer's last program?"));
         assert (selected.getDelivery().equals("Goodbye, world!"));
+
     }
 
     @Test
@@ -74,10 +75,22 @@ public class HttpRequestTest {
         assert (jokes.length == 4);
         assert (jokes[0].getId() == 2);
 
+        Joke a = new Joke(1, "Why did the chicken cross the road?", "To get to the other side");
+
+        restTemplate.postForEntity("http://localhost:" + port + "/add-joke", a, String.class);
+
+        responseEntity = restTemplate.getForEntity("http://localhost:" + port + "/list-jokes", Joke[].class);
+        jokes = responseEntity.getBody();
+        assert (jokes.length == 5);
+        assert (jokes[4].getSetup().equals("Why did the chicken cross the road?"));
+        assert (jokes[4].getDelivery().equals("To get to the other side"));
+        assert (jokes[4].getId() == 6);
+
         restTemplate.delete("http://localhost:" + port + "/delete-all-jokes");
         responseEntity = restTemplate.getForEntity("http://localhost:" + port + "/list-jokes", Joke[].class);
         jokes = responseEntity.getBody();
         assert (jokes.length == 0);
 
     }
+
 }
