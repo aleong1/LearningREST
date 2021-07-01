@@ -1,6 +1,9 @@
 package com.example.gettingjokes;
 
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -8,6 +11,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class HttpRequestTest {
 
     @LocalServerPort
@@ -17,6 +21,7 @@ public class HttpRequestTest {
     private TestRestTemplate restTemplate;
 
     @Test
+    @Order(1)
     public void testforListandAddJokes() {
         Joke a = new Joke(1, "What is a dying programmer's last program?", "Goodbye, world!");
         Joke b = new Joke(1, "I hate Russian matryoshka dolls.", "They're so full of themselves.");
@@ -49,6 +54,7 @@ public class HttpRequestTest {
     }
 
     @Test
+    @Order(2)
     public void testforSelectJokes(){
         String selectURL = "http://localhost:" + port + "/select-joke?id=";
         Joke selected = restTemplate.getForObject( selectURL + "1", Joke.class);
@@ -57,5 +63,21 @@ public class HttpRequestTest {
         assert (selected.getDelivery().equals("Goodbye, world!"));
     }
 
+    @Test
+    @Order(3)
+    public void testforDeleteJokes(){
+        String deleteOneJoke = "http://localhost:" + port + "/delete-joke?id=";
+        restTemplate.delete(deleteOneJoke + "1");
 
+        ResponseEntity<Joke[]> responseEntity = restTemplate.getForEntity("http://localhost:" + port + "/list-jokes", Joke[].class);
+        Joke[] jokes = responseEntity.getBody();
+        assert (jokes.length == 4);
+        assert (jokes[0].getId() == 2);
+
+        restTemplate.delete("http://localhost:" + port + "/delete-all-jokes");
+        responseEntity = restTemplate.getForEntity("http://localhost:" + port + "/list-jokes", Joke[].class);
+        jokes = responseEntity.getBody();
+        assert (jokes.length == 0);
+
+    }
 }
