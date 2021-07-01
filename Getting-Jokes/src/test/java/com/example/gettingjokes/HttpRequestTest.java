@@ -47,4 +47,15 @@ public class HttpRequestTest {
         assert (jokes[4].getId() == 5);
         assert (jokes[1].getId() == 2);
     }
+
+    @Test
+    public void testforSelectJokes(){
+        String selectURL = "http://localhost:" + port + "/select-joke?id=";
+        Joke selected = restTemplate.getForObject( selectURL + "1", Joke.class);
+        assert (selected.getId() == 1);
+        assert (selected.getSetup().equals("What is a dying programmer's last program?"));
+        assert (selected.getDelivery().equals("Goodbye, world!"));
+    }
+
+
 }
