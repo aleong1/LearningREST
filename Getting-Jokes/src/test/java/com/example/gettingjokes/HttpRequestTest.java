@@ -93,4 +93,53 @@ public class HttpRequestTest {
 
     }
 
+    @Test
+    @Order(4)
+    public void testforAll(){
+        Joke a = new Joke(1, "What is a dying programmer's last program?", "Goodbye, world!");
+        Joke b = new Joke(1, "I hate Russian matryoshka dolls.", "They're so full of themselves.");
+        Joke c = new Joke(1, "What does a turkey dress up as for Halloween?", "A gobblin'!" );
+
+        restTemplate.postForEntity("http://localhost:" + port + "/add-joke", a, String.class);
+        restTemplate.postForEntity("http://localhost:" + port + "/add-joke", b, String.class);
+        restTemplate.postForEntity("http://localhost:" + port + "/add-joke", c, String.class);
+
+        String selectURL = "http://localhost:" + port + "/select-joke?id=";
+        Joke selected = restTemplate.getForObject( selectURL + "1", Joke.class);
+        assert (selected.getId() == 1);
+        assert (selected.getSetup().equals("What is a dying programmer's last program?"));
+        assert (selected.getDelivery().equals("Goodbye, world!"));
+
+        selected = restTemplate.getForObject( selectURL + "3", Joke.class);
+        assert (selected.getId() == 3);
+        assert (selected.getSetup().equals("What does a turkey dress up as for Halloween?"));
+        assert (selected.getDelivery().equals("A gobblin'!"));
+
+        ResponseEntity<Joke[]> responseEntity = restTemplate.getForEntity("http://localhost:" + port + "/list-jokes", Joke[].class);
+        Joke[] jokes = responseEntity.getBody();
+        assert (jokes.length == 3);
+
+        String deleteOneJoke = "http://localhost:" + port + "/delete-joke?id=";
+        restTemplate.delete(deleteOneJoke + "3");
+
+        responseEntity = restTemplate.getForEntity("http://localhost:" + port + "/list-jokes", Joke[].class);
+        jokes = responseEntity.getBody();
+        assert (jokes.length == 2);
+        assert (jokes[1].getId() == 2);
+
+        Joke d = new Joke(2, "Why are cats so good at video games?","They have nine lives." );
+        restTemplate.postForEntity("http://localhost:" + port + "/add-joke", d, String.class);
+
+        responseEntity = restTemplate.getForEntity("http://localhost:" + port + "/list-jokes", Joke[].class);
+        jokes = responseEntity.getBody();
+        assert (jokes.length == 3);
+        assert (jokes[0].getId() == 1);
+        assert (jokes[1].getId() == 2);
+
+        selected = restTemplate.getForObject( selectURL + "3", Joke.class);
+        assert (selected.getId() == 3);
+        assert (selected.getSetup().equals("Why are cats so good at video games?"));
+
+    }
+
 }
