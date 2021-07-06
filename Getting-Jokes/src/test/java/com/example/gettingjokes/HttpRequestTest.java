@@ -140,6 +140,22 @@ public class HttpRequestTest {
         assert (selected.getId() == 3);
         assert (selected.getSetup().equals("Why are cats so good at video games?"));
 
+        restTemplate.delete("http://localhost:" + port + "/delete-all-jokes");
+        responseEntity = restTemplate.getForEntity("http://localhost:" + port + "/list-jokes", Joke[].class);
+        jokes = responseEntity.getBody();
+        assert (jokes.length == 0);
+
+        restTemplate.postForEntity("http://localhost:" + port + "/add-joke", d, String.class);
+        responseEntity = restTemplate.getForEntity("http://localhost:" + port + "/list-jokes", Joke[].class);
+        jokes = responseEntity.getBody();
+        assert (jokes.length == 1);
+        assert (jokes[0].getId() == 1);
+
+        selected = restTemplate.getForObject( selectURL + "1", Joke.class);
+        assert (selected.getId() == 1);
+        assert (selected.getSetup().equals("Why are cats so good at video games?"));
+        assert (selected.getDelivery().equals("They have nine lives."));
+
     }
 
 }
