@@ -156,6 +156,15 @@ public class HttpRequestTest {
         assert (selected.getSetup().equals("Why are cats so good at video games?"));
         assert (selected.getDelivery().equals("They have nine lives."));
 
+        restTemplate.postForEntity("http://localhost:" + port + "/add-joke", a, String.class);
+        selected = restTemplate.getForObject( selectURL + "2", Joke.class);
+        assert (selected.getId() == 2);
+
+        restTemplate.delete(deleteOneJoke + "1");
+
+        restTemplate.postForEntity("http://localhost:" + port + "/add-joke", b, String.class);
+        selected = restTemplate.getForObject( selectURL + "3", Joke.class);
+        assert (selected.getId() == 3);
     }
 
 }
